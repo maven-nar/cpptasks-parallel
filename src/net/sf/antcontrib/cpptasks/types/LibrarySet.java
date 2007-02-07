@@ -258,7 +258,7 @@ public class LibrarySet extends DataType {
                                final File[] libpath,
                                final FileVisitor visitor) throws BuildException {
         if (isReference()) {
-            LibrarySet master = ((LibrarySet) getCheckedRef(LibrarySet.class, "LibrarySet"));
+	    LibrarySet master = ((LibrarySet) getCheckedRef(LibrarySet.class, "LibrarySet"));
             master.visitLibraries(project, linker, libpath, visitor);
         }
         //
@@ -320,7 +320,7 @@ public class LibrarySet extends DataType {
                    //      style linkers but unnecessary fails
                    //     Unix style linkers.  Will need to revisit.
                    //
-                   if (matches == 0 && false) {
+                   if (matches == 0) {
                       StringBuffer msg = new StringBuffer("No file matching ");
                        if (patterns.length == 1) {
                            msg.append("pattern (");
