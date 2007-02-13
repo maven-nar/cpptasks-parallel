@@ -46,18 +46,17 @@ public final class IccLinker extends CommandLineLinker {
     }
     private boolean isADatasetLinker;
     File outputFile;
-    private String outputPrefix;
+
     CCTask task;
     private IccLinker() {
         super("icc", "/bogus", new String[]{".o", ".a", ".lib", ".xds"},
-                new String[]{".dll", ".x"}, ".xds", false, null);
-        this.outputPrefix = "";
+                new String[]{".dll", ".x"}, "", ".xds", false, null);
+
         this.isADatasetLinker = true;
     }
     private IccLinker(String outputPrefix, String outputSuffix) {
         super("icc", "/bogus", new String[]{".o", ".a", ".lib", ".x"},
-                new String[]{".dll"}, outputSuffix, false, null);
-        this.outputPrefix = outputPrefix;
+                new String[]{".dll"}, outputPrefix, outputSuffix, false, null);
         this.isADatasetLinker = false;
     }
     protected void addBase(long base, Vector args) {

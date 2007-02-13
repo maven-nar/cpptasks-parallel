@@ -77,4 +77,6 @@ public interface Linker extends Processor {
 			final boolean isDebug,
 			final File objDir, 
 			final TargetMatcher matcher) throws IOException;
+	
+     public void setOutputFilePrefix(String outputFilePrefix);
 }

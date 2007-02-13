@@ -33,14 +33,14 @@ import net.sf.antcontrib.cpptasks.types.LibraryTypeEnum;
  * @author Curt Arnold
  */
 public abstract class AbstractLdLinker extends CommandLineLinker {
-    private String outputPrefix;
+
+    
     protected AbstractLdLinker(String command, String identifierArg,
             String[] extensions, String[] ignoredExtensions,
             String outputPrefix, String outputSuffix, boolean isLibtool,
             AbstractLdLinker libtoolLinker) {
-        super(command, identifierArg, extensions, ignoredExtensions,
+        super(command, identifierArg, extensions, ignoredExtensions, outputPrefix,
                 outputSuffix, isLibtool, libtoolLinker);
-        this.outputPrefix = outputPrefix;
     }
     public void addBase(long base, Vector args) {
             if (base >= 0) {
@@ -235,12 +235,19 @@ public abstract class AbstractLdLinker extends CommandLineLinker {
     public int getMaximumCommandLength() {
         return Integer.MAX_VALUE;
     }
+    
+    
     public String[] getOutputFileNames(String baseName, VersionInfo versionInfo) {
             String[] baseNames = super.getOutputFileNames(baseName, versionInfo);
-            if (outputPrefix.length() > 0) {
+	    String currentOutputPrefix = "";
+	    if(null != outputFilePrefix)
+		    currentOutputPrefix = outputFilePrefix;
+	    else 
+		     currentOutputPrefix = outputPrefix;
+	    if (outputPrefix.length() > 0) {
                     for(int i = 0; i < baseNames.length; i++) {
-                            baseNames[i] = outputPrefix + baseNames[i];
-                    }
+                            baseNames[i] = currentOutputPrefix + baseNames[i];
+		    }
             }
         return baseNames;
     }

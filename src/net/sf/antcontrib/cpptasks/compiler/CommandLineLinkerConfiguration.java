@@ -87,8 +87,13 @@ public final class CommandLineLinkerConfiguration
         return map;
     }
     public String[] getOutputFileNames(String inputFile, VersionInfo versionInfo) {
-        return linker.getOutputFileNames(inputFile, versionInfo);
+	return linker.getOutputFileNames(inputFile, versionInfo);
     }
+    
+    public void setOutputFilePrefix(String outputFilePrefix) {
+	    linker.setOutputFilePrefix(outputFilePrefix);
+    }
+    
     public LinkerParam getParam(String name) {
         for (int i = 0; i < params.length; i++) {
             if (name.equals(params[i].getName()))

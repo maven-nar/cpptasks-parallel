@@ -36,7 +36,7 @@ public class CompaqVisualFortranLibrarian extends CommandLineLinker {
         return instance;
     }
     private CompaqVisualFortranLibrarian() {
-        super("lib", "/bogus", new String[]{".obj"}, new String[0], ".lib",
+        super("lib", "/bogus", new String[]{".obj"}, new String[0], "", ".lib",
                 false, null);
     }
     protected void addBase(long base, Vector args) {

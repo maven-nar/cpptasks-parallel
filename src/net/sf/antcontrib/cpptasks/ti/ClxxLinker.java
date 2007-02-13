@@ -52,7 +52,7 @@ public class ClxxLinker extends CommandLineLinker {
     }
     private ClxxLinker(String command, String outputSuffix) {
         super(command, "-h", new String[]{".o", ".lib", ".res"}, new String[]{
-                ".map", ".pdb", ".lnk"}, outputSuffix, false, null);
+                ".map", ".pdb", ".lnk"}, "", outputSuffix, false, null);
     }
     /*
      * (non-Javadoc)

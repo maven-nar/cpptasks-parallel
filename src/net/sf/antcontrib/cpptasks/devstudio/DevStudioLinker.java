@@ -30,7 +30,7 @@ public final class DevStudioLinker extends DevStudioCompatibleLinker {
         return instance;
     }
     private DevStudioLinker(String outputSuffix) {
-        super("link", "/DLL", outputSuffix);
+        super("link", "/DLL", "", outputSuffix);
     }
     public Linker getLinker(LinkType type) {
         if (type.isSharedLibrary()) {

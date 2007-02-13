@@ -28,6 +28,7 @@ import org.apache.tools.ant.BuildException;
 public interface LinkerConfiguration extends ProcessorConfiguration {
     public LinkerParam getParam(String name);
     void link(CCTask task, TargetInfo linkTarget) throws BuildException;
+    public void setOutputFilePrefix(String outputFilePrefix);
     Linker getLinker();
     boolean isDebug();
 }

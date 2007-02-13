@@ -234,7 +234,8 @@ public final class GccCCompiler extends GccCompatibleCCompiler {
         return identifier;
     }
     public Linker getLinker(LinkType linkType) {
-        return GccLinker.getInstance().getLinker(linkType);
+	GccLinker linker = GccLinker.getInstance();
+        return linker.getLinker(linkType);
     }
     public int getMaximumCommandLength() {
         return Integer.MAX_VALUE;

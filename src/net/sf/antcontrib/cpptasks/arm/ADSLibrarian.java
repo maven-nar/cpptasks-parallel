@@ -40,7 +40,7 @@ public class ADSLibrarian extends CommandLineLinker {
     private ADSLibrarian()
     {
         super("armar",null,
-          new String[] { ".o" }, new String[0], ".lib", false, null);
+          new String[] { ".o" }, new String[0], "", ".lib", false, null);
     }
 
     /* (non-Javadoc)

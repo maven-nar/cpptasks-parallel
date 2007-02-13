@@ -35,9 +35,9 @@ import net.sf.antcontrib.cpptasks.types.LibraryTypeEnum;
  */
 public abstract class DevStudioCompatibleLinker extends CommandLineLinker {
     public DevStudioCompatibleLinker(String command, String identifierArg,
-            String outputSuffix) {
+            String outputPrefix, String outputSuffix) {
         super(command, identifierArg, new String[]{".obj", ".lib", ".res"},
-                new String[]{".map", ".pdb", ".lnk", ".dll"}, outputSuffix,
+                new String[]{".map", ".pdb", ".lnk", ".dll"}, outputPrefix, outputSuffix,
                 false, null);
     }
     protected void addBase(long base, Vector args) {

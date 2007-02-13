@@ -38,11 +38,11 @@ public final class C89Linker extends CommandLineLinker {
     public static C89Linker getInstance() {
         return instance;
     }
-    private String outputPrefix;
+
     private C89Linker(String outputPrefix, String outputSuffix) {
         super("ld", "/bogus", new String[]{".o", ".a", ".lib", ".x"},
-                new String[]{}, outputSuffix, false, null);
-        this.outputPrefix = outputPrefix;
+                new String[]{}, outputPrefix, outputSuffix, false, null);
+
     }
     protected void addBase(long base, Vector args) {
     }

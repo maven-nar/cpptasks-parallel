@@ -28,32 +28,59 @@ import net.sf.antcontrib.cpptasks.compiler.Linker;
  */
 public class GccLinker extends AbstractLdLinker {
     private static final String[] discardFiles = new String[0];
+    
     private static final String[] objFiles = new String[]{".o", ".a", ".lib",
             ".dll", ".so", ".sl"};
+	    
     private static final String[] libtoolObjFiles = new String[]{".fo", ".a",
             ".lib", ".dll", ".so", ".sl"};
+	    
     private static String[] linkerOptions = new String[]{"-bundle",
             "-dynamiclib", "-nostartfiles", "-nostdlib", "-prebind", "-s",
             "-static", "-shared", "-symbolic", "-Xlinker",
             "--export-all-symbols", "-static-libgcc",};
-    private static final GccLinker dllLinker = new GccLinker("gcc", objFiles,
-            discardFiles, "lib", ".so", false, new GccLinker("gcc", objFiles,
-                    discardFiles, "lib", ".so", true, null));
-    private static final GccLinker instance = new GccLinker("gcc", objFiles,
-            discardFiles, "", "", false, null);
-    private static final GccLinker machBundleLinker = new GccLinker("gcc",
-            objFiles, discardFiles, "lib", ".bundle", false, null);
-    private static final GccLinker machDllLinker = new GccLinker("gcc",
-            objFiles, discardFiles, "lib", ".dylib", false, null);
+	    
+    private static GccLinker dllLinker;
+    private static Object dllLinkerGaurd = new Object(); //used as a gaurd for dllLinker since you can't synchronize on a null
+    
+    private static GccLinker instance;
+    private static Object instanceGaurd = new Object();//used as a gaurd for instance
+    
+    private static GccLinker machBundleLinker;
+    private static Object machBundleLinkerGaurd = new Object();
+    
+    
+    private static GccLinker machDllLinker;
+    private static Object machDllLinkerGaurd = new Object();
+    
     public static GccLinker getInstance() {
+	String currentOutputFilePrefix = outputFilePrefix == null ? "lib" : outputFilePrefix;
+	synchronized (instanceGaurd)
+	{
+		if (null == instance)
+			instance = new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, "", false, null);
+	}
         return instance;
     }
+    
+    public static GccLinker getInstance(String outputFilePrefix) {
+	String currentOutputFilePrefix = outputFilePrefix == null ? "lib" : outputFilePrefix;
+	synchronized (instanceGaurd)
+	{
+		if (null == instance)
+			instance = new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, "", false, null);
+	}
+        return instance;
+    }
+    
     private File[] libDirs;
     protected GccLinker(String command, String[] extensions,
             String[] ignoredExtensions, String outputPrefix,
             String outputSuffix, boolean isLibtool, GccLinker libtoolLinker) {
+    
         super(command, "-dumpversion", extensions, ignoredExtensions,
                 outputPrefix, outputSuffix, isLibtool, libtoolLinker);
+	
     }
     protected void addImpliedArgs(boolean debug, LinkType linkType, Vector args) {
         super.addImpliedArgs(debug, linkType, args);
@@ -188,23 +215,60 @@ public class GccLinker extends AbstractLdLinker {
         return libDirs;
     }
     public Linker getLinker(LinkType type) {
+	    String currentOutputFilePrefix = outputFilePrefix == null ? "lib" : outputFilePrefix;
         if (type.isStaticLibrary()) {
             return GccLibrarian.getInstance();
         }
+	//The seemingly heavy use of synchronized here is because of the late instanciation of a number of linkers.  This, in turn,
+	//is to allow for setting the prefix
         if (type.isPluginModule()) {
             if (isDarwin()) {
-                return machBundleLinker;
+		    synchronized(machBundleLinkerGaurd)//used as a gaurd for machBundleLinker since you can't synchronize on a null
+		    {
+			    if(null == machBundleLinker){
+				machBundleLinker = new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, ".bundle", false, null);
+			    }
+		    }
+		    return machBundleLinker;
+		
             } else {
-                return dllLinker;
+                synchronized(dllLinkerGaurd)//used as a gaurd for dllLinker since you can't synchronize on a null
+		    {
+			    if(null == dllLinker){
+				dllLinker = new GccLinker("gcc", objFiles, discardFiles, 
+					"lib", ".so", false, 
+					  new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, ".so", true, null));
+			    }
+		    }
+		    return dllLinker;
             }
         }
         if (type.isSharedLibrary()) {
             if (isDarwin()) {
-                return machDllLinker;
+                synchronized(machDllLinkerGaurd)//used as a gaurd for machDllLinker since you can't synchronize on a null
+		    {
+			    if(null == machDllLinker){
+				machDllLinker = new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, ".dylib", false, null);;
+			    }
+		    }
+		    return machDllLinker;
+
+		
+		
             } else {
-                return dllLinker;
+		    synchronized(dllLinkerGaurd)//used as a gaurd for dllLinker since you can't synchronize on a null
+		    {
+			    if(null == dllLinker){
+				dllLinker = new GccLinker("gcc", objFiles, discardFiles, 
+					"lib", ".so", false, 
+					  new GccLinker("gcc", objFiles, discardFiles, currentOutputFilePrefix, ".so", true, null));
+			    }
+		    }
+		    return dllLinker;
+			    
             }
         }
-        return instance;
+        return getInstance();
     }
+    
 }

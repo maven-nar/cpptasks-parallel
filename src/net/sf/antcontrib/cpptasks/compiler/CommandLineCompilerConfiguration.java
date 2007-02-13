@@ -47,6 +47,7 @@ public final class CommandLineCompilerConfiguration
     private/* final */ProcessorParam[] params;
     private/* final */boolean rebuild;
     private/* final */File[] sysIncludePath;
+    private static String outputFilePrefix;
     public CommandLineCompilerConfiguration(CommandLineCompiler compiler,
             String identifier, File[] includePath, File[] sysIncludePath,
             File[] envIncludePath, String includePathIdentifier, String[] args,
@@ -222,5 +223,8 @@ public final class CommandLineCompilerConfiguration
     }
     public String getCommand() {
     	return compiler.getCommand();
+    }
+    public void setOutputFilePrefix(String outputFilePrefix){
+	    this.outputFilePrefix = outputFilePrefix;
     }
 }

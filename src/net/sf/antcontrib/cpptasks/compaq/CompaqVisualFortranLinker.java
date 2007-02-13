@@ -34,7 +34,7 @@ public final class CompaqVisualFortranLinker extends DevStudioCompatibleLinker {
         return instance;
     }
     private CompaqVisualFortranLinker(String outputSuffix) {
-        super("DF", "__bogus__.xxx", outputSuffix);
+        super("DF", "__bogus__.xxx", "", outputSuffix);
     }
     protected void addImpliedArgs(boolean debug, LinkType linkType, Vector args) {
         args.addElement("/NOLOGO");
