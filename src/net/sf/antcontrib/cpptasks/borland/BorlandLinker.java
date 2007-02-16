@@ -43,7 +43,7 @@ public final class BorlandLinker extends CommandLineLinker {
     }
     private BorlandLinker(String outputSuffix) {
         super("ilink32", "-r", new String[]{".obj", ".lib", ".res"},
-                new String[]{".map", ".pdb", ".lnk"}, "", outputSuffix, false, null);
+                new String[]{".map", ".pdb", ".lnk"}, outputSuffix, false, null);
     }
     protected void addBase(long base, Vector args) {
         if (base >= 0) {

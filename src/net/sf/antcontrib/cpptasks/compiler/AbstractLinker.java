@@ -32,11 +32,8 @@ import org.apache.tools.ant.types.Environment;
  * @author Adam Murdoch
  */
 public abstract class AbstractLinker extends AbstractProcessor
-        implements Linker {
-		
-    protected static String outputFilePrefix = null;
-		
-		
+        implements
+            Linker {
     public AbstractLinker(String[] objExtensions, String[] ignoredExtensions) {
         super(objExtensions, ignoredExtensions);
     }
@@ -67,16 +64,13 @@ public abstract class AbstractLinker extends AbstractProcessor
         }
         return bid;
     }
-    
     public Processor changeEnvironment(boolean newEnvironment, Environment env) {
         return this;
     }
-    
     abstract protected LinkerConfiguration createConfiguration(CCTask task,
             LinkType linkType, ProcessorDef[] baseConfigs,
             LinkerDef specificConfig, TargetDef targetPlatform,
 			VersionInfo versionInfo);
-    
     public ProcessorConfiguration createConfiguration(CCTask task,
             LinkType linkType, ProcessorDef[] baseConfigs,
             ProcessorDef specificConfig,
@@ -88,17 +82,11 @@ public abstract class AbstractLinker extends AbstractProcessor
         return createConfiguration(task, linkType, baseConfigs,
                 (LinkerDef) specificConfig, targetPlatform, versionInfo);
     }
-    
     public String getLibraryKey(File libfile) {
         return libfile.getName();
     }
-    
     public abstract String[] getOutputFileNames(String fileName, VersionInfo versionInfo);
     
-    public void setOutputFilePrefix(String outputFilePrefix){
-	    this.outputFilePrefix = outputFilePrefix;
-	    
-    }
     
     /**
      * Adds source or object files to the bidded fileset to

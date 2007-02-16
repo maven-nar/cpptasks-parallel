@@ -54,25 +54,17 @@ public abstract class CommandLineLinker extends AbstractLinker
     private boolean newEnvironment = false;
     private String outputSuffix;
 
-    protected String outputPrefix;
-    
-    public void setOutputPrefix(String outputPrefix){
-	this.outputPrefix = outputPrefix;
-    }
-    
-    
 
     /** Creates a comand line linker invocation */
     public CommandLineLinker(String command,
         String identifierArg,
         String[] extensions,
-        String[] ignoredExtensions, String outputPrefix, String outputSuffix,
+        String[] ignoredExtensions, String outputSuffix,
         boolean isLibtool, CommandLineLinker libtoolLinker)
     {
         super(extensions, ignoredExtensions);
         this.command = command;
         this.identifierArg = identifierArg;
-	this.outputPrefix = outputPrefix;
         this.outputSuffix = outputSuffix;
         this.isLibtool = isLibtool;
         this.libtoolLinker = libtoolLinker;

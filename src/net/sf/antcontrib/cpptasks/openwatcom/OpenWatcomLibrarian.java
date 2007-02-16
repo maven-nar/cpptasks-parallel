@@ -51,7 +51,7 @@ public final class OpenWatcomLibrarian
    */
   private OpenWatcomLibrarian() {
     super("wlib", null, new String[] {".obj"}
-          , new String[0], "", ".lib", false,
+          , new String[0], ".lib", false,
           null);
   }
 

@@ -44,7 +44,7 @@ public abstract class OpenWatcomLinker
                              final String outputSuffix) {
     super(command, "-r", new String[] {".obj", ".lib", ".res"}
           ,
-          new String[] {".map", ".pdb", ".lnk"}, ""
+          new String[] {".map", ".pdb", ".lnk"}
           , outputSuffix, false, null);
   }
 

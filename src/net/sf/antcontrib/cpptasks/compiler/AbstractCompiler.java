@@ -41,7 +41,6 @@ public abstract class AbstractCompiler extends AbstractProcessor
             Compiler {
     private static final String[] emptyIncludeArray = new String[0];
     private String outputSuffix;
-    private static String outputFilePrefix;
     protected AbstractCompiler(String[] sourceExtensions,
             String[] headerExtensions, String outputSuffix) {
         super(sourceExtensions, headerExtensions);
@@ -205,9 +204,5 @@ public abstract class AbstractCompiler extends AbstractProcessor
             }
         }
         return false;
-    }
-    
-    public void setOutputFilePrefix(String outputFilePrefix){
-	    this.outputFilePrefix = outputFilePrefix;
     }
 }

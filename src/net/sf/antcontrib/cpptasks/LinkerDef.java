@@ -281,17 +281,6 @@ public class LinkerDef extends ProcessorDef {
         }
         return linker;
     }
-    public Linker getLinker() {
-	Linker linker = (Linker) super.getProcessor();
-        if (linker == null) {
-            linker = GccLinker.getInstance();
-        }
-        if (getLibtool() && linker instanceof CommandLineLinker) {
-            CommandLineLinker cmdLineLinker = (CommandLineLinker) linker;
-            linker = cmdLineLinker.getLibtoolLinker();
-        }
-        return linker;
-    }
     public int getStack(LinkerDef[] defaultProviders, int index) {
         if (isReference()) {
             return ((LinkerDef) getCheckedRef(LinkerDef.class, "LinkerDef"))

@@ -40,7 +40,7 @@ public class ADSLinker extends CommandLineLinker {
     }
     private ADSLinker(String outputSuffix) {
         super("armlink", "-vsn", new String[]{".o", ".lib", ".res"},
-                new String[]{".map", ".pdb", ".lnk"}, "", outputSuffix, false, null);
+                new String[]{".map", ".pdb", ".lnk"}, outputSuffix, false, null);
     }
     /*
      * (non-Javadoc)
