@@ -326,7 +326,12 @@ public class TestLibrarySet
       } catch(BuildException ex) {
           return;
       }
-      fail("visitLibraries should throw exception due to unsatisifed libname");
+//
+//      code around line 320 in LibrarySet that would throw BuildException
+//         (and prevent reaching this line) is disabled since logic for identifying
+//         missing libraries does not work reliably on non-Windows platforms
+//       
+//      fail("visitLibraries should throw exception due to unsatisifed libname");
     }
 
 }
