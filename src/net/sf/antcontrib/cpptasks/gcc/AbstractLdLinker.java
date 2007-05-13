@@ -115,13 +115,13 @@ public abstract class AbstractLdLinker extends CommandLineLinker {
             //
             if (set.getType() != previousLibraryType) {
                     if (set.getType() != null && "static".equals(set.getType().getValue())) {
-                            endargs.addElement("-Bstatic");
+                            endargs.addElement(getStaticLibFlag());
                             previousLibraryType = set.getType();
                     } else {
                             if (set.getType() == null ||
                                             !"framework".equals(set.getType().getValue()) ||
                                                         !isDarwin()) {
-                                    endargs.addElement("-Bdynamic");
+                                    endargs.addElement(getDynamicLibFlag());
                                     previousLibraryType = set.getType();
                             }
                     }
@@ -321,5 +321,13 @@ public abstract class AbstractLdLinker extends CommandLineLinker {
         }
         return super.prepareArguments(task, outputDir, outputFile,
                 finalSources, config);
+    }
+
+    protected String getDynamicLibFlag() {
+        return "-Bdynamic";
+    }
+
+    protected String getStaticLibFlag() {
+        return "-Bstatic";
     }
 }
