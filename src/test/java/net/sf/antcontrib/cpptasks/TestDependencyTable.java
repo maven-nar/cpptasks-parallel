@@ -51,7 +51,7 @@ public class TestDependencyTable extends TestXMLConsumer {
             ParserConfigurationException, SAXException {
         String tmpDir = System.getProperty("java.io.tmpdir");
         try {
-            copyResourceToTmpDir("files/openshore/dependencies.xml",
+            copyResourceToTmpDir("openshore/dependencies.xml",
                     "dependencies.xml");
             DependencyTable dependencies = new DependencyTable(new File(tmpDir));
             dependencies.load();
@@ -68,7 +68,7 @@ public class TestDependencyTable extends TestXMLConsumer {
             ParserConfigurationException, SAXException {
         String tmpDir = System.getProperty("java.io.tmpdir");
         try {
-            copyResourceToTmpDir("files/xerces-c/dependencies.xml",
+            copyResourceToTmpDir("xerces-c/dependencies.xml",
                     "dependencies.xml");
             DependencyTable dependencies = new DependencyTable(new File(tmpDir));
             dependencies.load();

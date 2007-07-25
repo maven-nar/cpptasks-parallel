@@ -65,7 +65,7 @@ public class TestTargetHistoryTable extends TestXMLConsumer {
      */
     public void testLoadOpenshore() throws IOException {
         try {
-            copyResourceToTmpDir("files/openshore/history.xml", "history.xml");
+            copyResourceToTmpDir("openshore/history.xml", "history.xml");
             CCTask task = new CCTask();
             String tmpDir = System.getProperty("java.io.tmpdir");
             TargetHistoryTable history = new TargetHistoryTable(task, new File(
@@ -81,7 +81,7 @@ public class TestTargetHistoryTable extends TestXMLConsumer {
      */
     public void testLoadXerces() throws IOException {
         try {
-            copyResourceToTmpDir("files/xerces-c/history.xml", "history.xml");
+            copyResourceToTmpDir("xerces-c/history.xml", "history.xml");
             CCTask task = new CCTask();
             String tmpDir = System.getProperty("java.io.tmpdir");
             TargetHistoryTable history = new TargetHistoryTable(task, new File(

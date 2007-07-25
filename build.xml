@@ -41,16 +41,18 @@ Copyright 2001-2006 The Ant-Contrib project
          Set the properties related to the source tree
        ===================================================================
   -->
-  <property name="src.dir" value="src"/>
-  <property name="java.dir" value="src"/>
-  <property name="tests.java.dir" value="test/junit"/>
+  <property name="src.dir" value="src/main/java"/>
+  <property name="resources.dir" value="src/main/resources"/>
+  <property name="java.dir" value="src/main/java"/>
+  <property name="tests.java.dir" value="src/test/java"/>
+  <property name="tests.resources.dir" value="src/test/resources"/>
 
   <!--
        ===================================================================
          Set the properties for the build area
        ===================================================================
   -->
-  <property name="build.dir" value="build"/>
+  <property name="build.dir" value="target"/>
   <property name="build.classes" value="${build.dir}/classes"/>
   <property name="tests.build.classes" value="${build.dir}/tests"/>
   <property name="tests.build.lib" value="${build.dir}/lib"/>
@@ -65,7 +67,7 @@ Copyright 2001-2006 The Ant-Contrib project
        ===================================================================
   -->
   <property name="dist.name" value="${name}-${version}"/>
-  <property name="dist.base" value="dist"/>
+  <property name="dist.base" value="target"/>
   <property name="dist.dir" value="${dist.base}/${dist.name}"/>
   <property name="dist.javadocs" value="${dist.dir}/docs/manual/api"/>
 
@@ -145,10 +147,10 @@ Copyright 2001-2006 The Ant-Contrib project
           depends="build"
           description="--> creates the jar">
     <mkdir dir="${build.lib}"/>
-    <jar jarfile="${build.lib}/${name}.jar" manifest="${src.dir}/cpptasks.mf">
+    <jar jarfile="${build.lib}/${name}.jar" manifest="${resources.dir}/cpptasks.mf">
                  <fileset dir="." includes="LICENSE NOTICE"/>
          <fileset dir="${build.classes}"/>
-                 <fileset dir="${src.dir}" includes="cpptasks.tasks,cpptasks.types,net/sf/antcontrib/cpptasks/antlib.xml"/>
+                 <fileset dir="${resources.dir}" includes="cpptasks.tasks,cpptasks.types,net/sf/antcontrib/cpptasks/antlib.xml"/>
     </jar>
   </target>
 
@@ -177,8 +179,9 @@ Copyright 2001-2006 The Ant-Contrib project
   <target name="run-tests"  depends="build-tests" description="Run tests">
         <junit printsummary="false"
                 fork="true"
-                dir="${tests.java.dir}">
+                dir="${tests.resources.dir}">
             <classpath>
+                <pathelement location="${java.dir}"/>
                 <pathelement location="${tests.build.lib}/${name}_test.jar" />
                 <pathelement location="${build.lib}/${name}.jar" />
             </classpath>
@@ -194,7 +197,7 @@ Copyright 2001-2006 The Ant-Contrib project
   <target name="run-coverage-tests"  depends="build-tests">
         <junit printsummary="false"
                 fork="true"
-                dir="${tests.java.dir}">
+                dir="${tests.resources.dir}">
             <classpath>
                 <pathelement location="${tests.build.lib}/${name}_test.jar" />
                 <pathelement location="${build.lib}/${name}.jar" />
