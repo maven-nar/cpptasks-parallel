@@ -16,6 +16,8 @@
  */
 package net.sf.antcontrib.cpptasks.parser;
 
+import junit.framework.TestCase;
+
 import java.io.CharArrayReader;
 import java.io.IOException;
 
@@ -23,7 +25,7 @@ import java.io.IOException;
  * Tests for the CParser class.
  */
 public final class TestFortranParser
-    extends TestAbstractParser {
+    extends TestCase {
   /**
    * Constructor.
    * @param name String test name

@@ -28,12 +28,6 @@ import org.xml.sax.SAXException;
  */
 public class TestDependencyTable extends TestXMLConsumer {
     /**
-     * Default constructor
-     */
-    public TestDependencyTable() {
-        super();
-    }
-    /**
      * Constructor
      * 
      * @param testName

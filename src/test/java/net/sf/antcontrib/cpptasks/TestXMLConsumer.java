@@ -28,7 +28,7 @@ import junit.framework.TestCase;
  * @author Curt Arnold
  *  
  */
-public class TestXMLConsumer extends TestCase {
+public abstract class TestXMLConsumer extends TestCase {
     /**
      * Loads a TargetHistoryTable from a resource
      * 
@@ -88,13 +88,9 @@ public class TestXMLConsumer extends TestCase {
         }
     }
     /**
-     * @param arg0
+     * @param testName
      */
-    protected TestXMLConsumer(String testName) {
+    protected TestXMLConsumer(final String testName) {
         super(testName);
-    }
-    
-    protected TestXMLConsumer() {
-        super("TestXMLConsumer");
     }
 }
