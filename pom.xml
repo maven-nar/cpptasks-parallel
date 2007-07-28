@@ -48,6 +48,10 @@
                <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=ant-contrib-developers</archive>
        </mailingList>
   </mailingLists>
+    <organization>
+        <name>Ant-Contrib Project</name>
+        <url>http://ant-contrib.sourceforge.net</url>
+    </organization>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -97,12 +101,32 @@
         <executions>
           <!--   release builds will put SVN tags into the SCM page, this changes it back to a branch  -->
           <execution>
+            <phase>pre-site</phase>
+            <id>pre-site</id>
+            <configuration>
+                <tasks>
+                    <mkdir dir="target/taskdocs-classes"/>
+                    <javac srcdir="src/taskdocs/java" destdir="target/taskdocs-classes" debug="true"/>
+                    <mkdir dir="src/site/xdoc/antdocs"/>
+                    <javadoc sourcepath="src/main/java"
+                        doclet="net.sf.antcontrib.taskdocs.TaskDoclet"
+                        docletPath="target/taskdocs-classes"
+                        classpath="${user.home}/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar">
+                        <fileset dir="src/main/java" includes="**/*.java"/>
+                     </javadoc>
+                </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
             <phase>site</phase>
             <id>untag-site</id>
             <configuration>
                 <tasks>
                     <taskdef name="replaceregexp" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />                
-                   <replaceregexp file="target/site/source-repository.html" match="/tags/[^ ]*" replace="/branches/v1_2-branch" flags="g" />
+                    <replaceregexp file="target/site/source-repository.html" match="/tags/[^ ]*" replace="/branches/v1_2-branch" flags="g" />
                 </tasks>
             </configuration>
             <goals>
@@ -115,6 +139,16 @@
             <groupId>ant</groupId>
             <artifactId>ant-nodeps</artifactId>
             <version>1.6.5</version>
+          </dependency>
+          <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant-trax</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+          <dependency>
+               <groupId>ant-contrib</groupId>
+                <artifactId>taskdocs</artifactId>
+                <version>0.1-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>	 
@@ -134,7 +168,7 @@
             </execution>
         </executions>
 	 </plugin>
-      <plugin>
+      <!-- plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <executions>
             <execution>
@@ -144,7 +178,7 @@
                 </goals>
             </execution>
         </executions>
-      </plugin>
+      </plugin -->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
@@ -194,10 +228,6 @@
             </reports>
           </reportSet>
         </reportSets>
-      </plugin>
-      <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
       <plugin>
           <artifactId>maven-release-plugin</artifactId>

@@ -16,6 +16,15 @@
 
 -->
 <project name="cpptasks: Compile tasks for Apache Ant">
+  <bannerLeft>
+    <name>ant-contrib</name>
+    <href>http://ant-contrib.sourceforge.net/</href>
+  </bannerLeft>
+  <bannerRight>
+    <name>SourceForge.net Logo</name>
+    <src>http://sflogo.sourceforge.net/sflogo.php?group_id=36177&amp;type=5</src>
+    <href>http://www.sourceforge.net/</href>
+  </bannerRight>
   <body>
     <breadcrumbs>
       <item name="ant-contrib" href="http://ant-contrib.sourceforge.net/"/>
@@ -31,19 +40,30 @@
 	<menu name="About cpptasks">
 	   <item name="Usage" href="/index.html"/>
 	   <item name="FAQ" href="/faq.html"/>
-	   <item name="Roadmap" href="/roadmap.html"/>
+	</menu>
+	
+	<menu name="Elements">
+	        <item name="cc" href="/antdocs/CCTask.html"/>
+	      	<item name="compiler" href="/antdocs/CompilerDef.html"/>
+	      	<item name="defineset" href="/antdocs/DefineSet.html"/>
+	      	<item name="distributer" href="/antdocs/DistributerDef.html"/>
+	      	<item name="libraryset" href="/antdocs/LibrarySet.html"/>
+	      	<item name="linker" href="/antdocs/LinkerDef.html"/>
+	      	<item name="syslibraryset" href="/antdocs/SystemLibrarySet.html"/>
+	      	<item name="targetplatform" href="/antdocs/TargetDef.html"/>
+	      	<item name="versioninfo" href="/antdocs/VersionInfo.html"/>
 	</menu>
 
 	<menu name="Community">
 		<item name="Mailing Lists" href="/mail-lists.html"/>
 		<item name="Issue Tracking" href="/issue-tracking.html"/>
+		<item name="Project Page" href="http://sourceforge.net/projects/ant-contrib/"/>
+		<item name="News" href="http://sourceforge.net/news/?group_id=36177"/>
 	</menu>
 	
 	<menu name="Development">
 		<item name="Repository" href="/source-repository.html"/>
 		<item name="JavaDoc" href="/apidocs/index.html"/>
-		<item name="Cross Reference" href="/jxr.html"/>
-		<item name="Dependencies" href="/dependencies.html"/>
 		<item name="Continuous Integration" href="/integration.html"/>
 	</menu>
   </body>

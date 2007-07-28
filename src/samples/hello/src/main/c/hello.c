@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<!--
+/*
+
  Licensed to the Ant-Contrib Project under one or more
  contributor license agreements.  See the NOTICE file distributed with
  this work for additional information regarding copyright ownership.
@@ -15,13 +15,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
--->
-<faqs title="Frequently Asked Questions">
-  <part id="faq">
+*/
 
-      <faq id="hello">
-         <question>A Question?</question>
-         <answer>An Answer.</answer>
-      </faq>
-  </part>
-</faqs>
+#include <stdio.h>
+
+int main(int argc, const char** argv) {
+   puts("Hello, World.");
+   return 1;
+}

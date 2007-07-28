@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!--
  Licensed to the Ant-Contrib Project under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -16,12 +15,12 @@
  limitations under the License.
 
 -->
-<faqs title="Frequently Asked Questions">
-  <part id="faq">
-
-      <faq id="hello">
-         <question>A Question?</question>
-         <answer>An Answer.</answer>
-      </faq>
-  </part>
-</faqs>
+<project name="hello" default="compile">
+    <taskdef resource="cpptasks.tasks"/>
+    <target name="compile">
+        <mkdir dir="target/main/obj"/>
+        <cc outtype="executable" subsystem="console" outfile="target/hello" objdir="target/main/obj">
+           <fileset dir="src/main/c" includes="*.c"/>
+        </cc>
+    </target>
+</project>

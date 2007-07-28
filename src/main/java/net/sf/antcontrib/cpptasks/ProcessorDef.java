@@ -65,7 +65,7 @@ public abstract class ProcessorDef extends DataType {
      */
     private String ifProp;
     /**
-     * if true, processor definition inherits values from containing <cc>
+     * if true, processor definition inherits values from containing cc
      * element
      */
     private boolean inherit;
@@ -175,7 +175,7 @@ public abstract class ProcessorDef extends DataType {
      * Creates a configuration
      * 
      * @param baseDef
-     *            reference to def from containing <cc>element, may be null
+     *            reference to def from containing cc element, may be null
      * @return configuration
      *  
      */
@@ -192,7 +192,7 @@ public abstract class ProcessorDef extends DataType {
         return proc.createConfiguration(task, linkType, defaultProviders, this, targetPlatform, versionInfo);
     }
     /**
-     * Prepares list of processor arguments ( <compilerarg>, <linkerarg>) that
+     * Prepares list of processor arguments ( compilerarg, linkerarg ) that
      * are active for the current project settings.
      * 
      * @return active compiler arguments
@@ -219,7 +219,7 @@ public abstract class ProcessorDef extends DataType {
         return array;
     }
     /**
-     * Prepares list of processor arguments ( <compilerarg>, <linkerarg>) that
+     * Prepares list of processor arguments ( compilerarg, linkerarg) that
      * are active for the current project settings.
      * 
      * @return active compiler arguments
@@ -315,7 +315,7 @@ public abstract class ProcessorDef extends DataType {
     }
     /**
      * Gets the inherit attribute. If the inherit value is true, this processor
-     * definition will inherit default values from the containing <cc>element.
+     * definition will inherit default values from the containing cc element.
      * 
      * @return if true then properties from the containing <cc>element are
      *         used.
@@ -523,7 +523,7 @@ public abstract class ProcessorDef extends DataType {
     }
     /**
      * If inherit has the default value of true, defines, includes and other
-     * settings from the containing <cc>element will be inherited.
+     * settings from the containing cc element will be inherited.
      * 
      * @param inherit
      *            new value

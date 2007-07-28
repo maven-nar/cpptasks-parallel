@@ -79,7 +79,7 @@ import org.apache.tools.ant.types.Environment;
  * <ul><li>Ant 1.6 or later: add xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks" to &lt;project&gt; element.</li>
  * <li>Ant 1.5 or later: Add &lt;taskdef resource="cpptasks.tasks"/&gt; and &lt;typedef
  * resource="cpptasks.types"/&gt; to body of &lt;project&gt; element.</li></ul></li>
- * <li>Add &lt;cc/&gt;, &lt;compiler/&gt; and &lt;linker/&gt elements to
+ * <li>Add &lt;cc/&gt;, &lt;compiler/&gt; and &lt;linker/&gt; elements to
  * project.</li>
  * <li>Set path and environment variables to be able to run compiler from
  * command line.</li>

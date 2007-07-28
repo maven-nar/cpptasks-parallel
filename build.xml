@@ -744,4 +744,12 @@ Copyright 2001-2006 The Ant-Contrib project
   </target>
 
 
+  <target name="style">
+    <mkdir dir="src/site/xdoc"/>
+    <xslt style="src/taskdocs/resources/net/sf/antcontrib/taskdocs/type.xslt"
+            baseDir="target/site/antdocs" includes="*.xml" processor="trax"
+            destDir="src/site/xdoc" extension=".xml" force="true"/>
+
+  </target>
+
 </project>
