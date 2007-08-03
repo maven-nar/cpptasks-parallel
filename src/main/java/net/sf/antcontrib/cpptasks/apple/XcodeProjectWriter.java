@@ -21,6 +21,7 @@ import net.sf.antcontrib.cpptasks.TargetInfo;
 import net.sf.antcontrib.cpptasks.CUtil;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
+import net.sf.antcontrib.cpptasks.compiler.CommandLineLinkerConfiguration;
 import net.sf.antcontrib.cpptasks.gcc.GccCCompiler;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
@@ -147,7 +148,12 @@ public final class XcodeProjectWriter
         //
         //   add project configurations
         //
-        PBXObjectRef projectConfigurations = addProjectConfigurationList(objects);
+        PBXObjectRef compilerConfigurations =
+                addProjectConfigurationList(objects,
+                        basePath,
+                        compilerConfig,
+                        (CommandLineLinkerConfiguration)
+                                linkTarget.getConfiguration());
 
         String projectDirPath = "";
         List projectTargets = new ArrayList();
@@ -157,14 +163,15 @@ public final class XcodeProjectWriter
         //      shared library)
         //
         PBXObjectRef nativeTarget =
-                addNativeTarget(objects, linkTarget, product, sourceGroupChildren);
+                addNativeTarget(objects, linkTarget, product,
+                        projectName, sourceGroupChildren);
         projectTargets.add(nativeTarget);
 
 
         //
         //    add project to property list
         //
-        PBXObjectRef project = createPBXProject(projectConfigurations, mainGroup,
+        PBXObjectRef project = createPBXProject(compilerConfigurations, mainGroup,
                 projectDirPath, projectTargets);
         objects.put(project.getID(), project.getProperties());
 
@@ -225,7 +232,12 @@ public final class XcodeProjectWriter
                 linkTarget.getOutput().getParent(),
                 linkTarget.getOutput());
         Map executableProperties = executable.getProperties();
-        executableProperties.put("explicitFileType", "compiled.mach-o.executable");
+
+        String fileType = "compiled.mach-o.executable";
+        if (isStaticLibrary(linkTarget)) {
+            fileType = "archive.ar";
+        }
+        executableProperties.put("explicitFileType", fileType);
         executableProperties.put("includeInIndex", "0");
         objects.put(executable.getID(), executableProperties);
 
@@ -322,9 +334,14 @@ public final class XcodeProjectWriter
     /**
      * Add project configuration list.
      * @param objects map of objects.
+     * @param compilerConfig compiler configuration.
+     * @param linkerConfig linker configuration.
      * @return project configuration object.
      */
-    private PBXObjectRef addProjectConfigurationList(final Map objects) {
+    private PBXObjectRef addProjectConfigurationList(final Map objects,
+         final String baseDir,
+         final CommandLineCompilerConfiguration compilerConfig,
+         final CommandLineLinkerConfiguration linkerConfig) {
         //
         //   Create a configuration list with
         //     two stock configurations: Debug and Release
@@ -353,6 +370,58 @@ public final class XcodeProjectWriter
         projectConfigurationListProperties.put("defaultConfigurationIsVisible", "0");
         projectConfigurationListProperties.put("defaultConfigurationName", "Release");
         objects.put(configurationList.getID(), configurationList.getProperties());
+
+        //
+        //    add include paths to both configurations
+        //
+        File[] includeDirs = compilerConfig.getIncludePath();
+        if (includeDirs.length > 0) {
+            ArrayList includePaths = new ArrayList();
+            for (int i = 0; i < includeDirs.length; i++) {
+                String relPath = CUtil.getRelativePath(baseDir, includeDirs[i]);
+                if (relPath.startsWith("..")) {
+                    includePaths.add(includeDirs[i].getPath());
+                } else {
+                    includePaths.add(relPath);
+                }
+            }
+            includePaths.add("${inherited)");
+            debugSettings.put("HEADER_SEARCH_PATHS", includePaths);
+            releaseSettings.put("HEADER_SEARCH_PATHS", includePaths);
+        }
+
+        //
+        //   add preprocessor definitions to both configurations
+        //
+        //
+        String[] preArgs = compilerConfig.getPreArguments();
+        List defines = new ArrayList();
+        for (int i = 0; i < preArgs.length; i++) {
+            if (preArgs[i].startsWith("-D")) {
+                defines.add(preArgs[i].substring(2));
+            }
+        }
+        if (defines.size() > 0) {
+            defines.add("$(inherited)");
+            debugSettings.put("GCC_PREPROCESSOR_DEFINITIONS", defines);
+            releaseSettings.put("GCC_PREPROCESSOR_DEFINITIONS", defines);
+        }
+
+        String[] linkerArgs = linkerConfig.getPreArguments();
+        List librarySearchPaths = new ArrayList();
+        for (int i = 0; i < linkerArgs.length; i++) {
+            if (linkerArgs[i].startsWith("-L")) {
+                 librarySearchPaths.add(linkerArgs[i].substring(2));
+            }
+        }
+        if (librarySearchPaths.size() > 0) {
+            librarySearchPaths.add("\"$(inherited)\"");
+            debugSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
+            releaseSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
+        }
+
+
+
         return configurationList;
     }
 
@@ -361,16 +430,18 @@ public final class XcodeProjectWriter
      * @param objects map of objects.
      * @param linkTarget description of executable or shared library.
      * @param product product.
+     * @param projectName project name.
      * @param sourceGroupChildren source files needed to build product.
      * @return native target.
      */
     private PBXObjectRef addNativeTarget(final Map objects,
                                       final TargetInfo linkTarget,
                                       final PBXObjectRef product,
+                                      final String projectName,
                                       final List sourceGroupChildren) {
 
-        PBXObjectRef buildConfigurations = this.addNativeTargetConfigurationList(objects,
-                linkTarget.getOutput().getName());
+        PBXObjectRef buildConfigurations =
+                addNativeTargetConfigurationList(objects, projectName);
 
         int buildActionMask = 2147483647;
         List buildPhases = new ArrayList();
@@ -411,13 +482,26 @@ public final class XcodeProjectWriter
         String productInstallPath = "$(HOME)/bin";
 
         String productType = "com.apple.product-type.tool";
+        if (isStaticLibrary(linkTarget)) {
+            productType = "com.apple.product-type.library.static";
+        }
 
-        PBXObjectRef nativeTarget = createPBXNativeTarget("hello",
+        PBXObjectRef nativeTarget = createPBXNativeTarget(projectName,
                 buildConfigurations, buildPhases, buildRules, dependencies,
-                productInstallPath, "hello", product, productType);
+                productInstallPath, projectName, product, productType);
         objects.put(nativeTarget.getID(), nativeTarget.getProperties());
 
         return nativeTarget;
+    }
+
+    /**
+     * Determines if linked target is a static library.
+     * @param linkTarget link target
+     * @return true if a static library
+     */
+    private static boolean isStaticLibrary(final TargetInfo linkTarget) {
+        String outPath = linkTarget.getOutput().getPath();
+        return (outPath.lastIndexOf(".a") == outPath.length() - 2);
     }
 
 
@@ -435,11 +519,6 @@ public final class XcodeProjectWriter
         map.put("isa", "PBXFileReference");
 
         String relPath = CUtil.getRelativePath(baseDir, file);
-        String name = file.getName();
-
-        if (!name.equals(relPath)) {
-            map.put("name", name);
-        }
         map.put("path", relPath);
         map.put("sourceTree", sourceTree);
         return new PBXObjectRef(map);
