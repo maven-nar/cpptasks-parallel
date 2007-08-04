@@ -22,12 +22,16 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
 
 /**
  * Static class that provides methods to serialize
@@ -45,16 +49,20 @@ public final class PropertyListSerialization {
     /**
      * Serializes a property list into a Cocoa XML Property List document.
      * @param propertyList property list.
-     * @param result destination.
+     * @param file destination.
      * @throws SAXException if exception during serialization.
      * @throws TransformerConfigurationException if exception creating serializer.
      */
     public static void serialize(final Map propertyList,
-                                 final Result result)
-           throws SAXException, TransformerConfigurationException {
+                                 final File file)
+           throws IOException, SAXException,
+               TransformerConfigurationException {
         SAXTransformerFactory sf = (SAXTransformerFactory)
                 SAXTransformerFactory.newInstance();
         TransformerHandler handler = sf.newTransformerHandler();
+
+        FileOutputStream os = new FileOutputStream(file);
+        StreamResult result = new StreamResult(os);
         handler.setResult(result);
 
         handler.startDocument();

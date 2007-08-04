@@ -17,20 +17,18 @@
 package net.sf.antcontrib.cpptasks.apple;
 
 import net.sf.antcontrib.cpptasks.CCTask;
-import net.sf.antcontrib.cpptasks.TargetInfo;
 import net.sf.antcontrib.cpptasks.CUtil;
+import net.sf.antcontrib.cpptasks.TargetInfo;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration;
-import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineLinkerConfiguration;
+import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
 import net.sf.antcontrib.cpptasks.gcc.GccCCompiler;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import org.apache.tools.ant.BuildException;
 import org.xml.sax.SAXException;
 
-import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -186,10 +184,8 @@ public final class XcodeProjectWriter
         //
         //    write property list out to XML file
         //
-        Result result = new StreamResult(xcodeProj);
-
         try {
-            PropertyListSerialization.serialize(propertyList, result);
+            PropertyListSerialization.serialize(propertyList, xcodeProj);
         } catch (TransformerConfigurationException ex) {
             throw new IOException(ex.toString());
         } catch (SAXException ex) {
@@ -236,6 +232,8 @@ public final class XcodeProjectWriter
         String fileType = "compiled.mach-o.executable";
         if (isStaticLibrary(linkTarget)) {
             fileType = "archive.ar";
+        } else if (isDylibLibrary(linkTarget)) {
+            fileType = "compiled.mach-o.dylib";
         }
         executableProperties.put("explicitFileType", fileType);
         executableProperties.put("includeInIndex", "0");
@@ -334,6 +332,7 @@ public final class XcodeProjectWriter
     /**
      * Add project configuration list.
      * @param objects map of objects.
+     * @param baseDir base directory.
      * @param compilerConfig compiler configuration.
      * @param linkerConfig linker configuration.
      * @return project configuration object.
@@ -368,7 +367,7 @@ public final class XcodeProjectWriter
         PBXObjectRef configurationList = createXCConfigurationList(configurations);
         Map projectConfigurationListProperties = configurationList.getProperties();
         projectConfigurationListProperties.put("defaultConfigurationIsVisible", "0");
-        projectConfigurationListProperties.put("defaultConfigurationName", "Release");
+        projectConfigurationListProperties.put("defaultConfigurationName", "Debug");
         objects.put(configurationList.getID(), configurationList.getProperties());
 
         //
@@ -409,9 +408,12 @@ public final class XcodeProjectWriter
 
         String[] linkerArgs = linkerConfig.getPreArguments();
         List librarySearchPaths = new ArrayList();
+        List libNames = new ArrayList();
         for (int i = 0; i < linkerArgs.length; i++) {
             if (linkerArgs[i].startsWith("-L")) {
                  librarySearchPaths.add(linkerArgs[i].substring(2));
+            } else if (linkerArgs[i].startsWith("-l")) {
+                 libNames.add(linkerArgs[i]);
             }
         }
         if (librarySearchPaths.size() > 0) {
@@ -419,9 +421,11 @@ public final class XcodeProjectWriter
             debugSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
             releaseSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
         }
-
-
-
+        if (libNames.size() > 0) {
+            libNames.add("$(inherited)");
+            debugSettings.put("OTHER_LDFLAGS", libNames);
+            releaseSettings.put("OTHER_LDFLAGS", libNames);
+        }
         return configurationList;
     }
 
@@ -484,6 +488,8 @@ public final class XcodeProjectWriter
         String productType = "com.apple.product-type.tool";
         if (isStaticLibrary(linkTarget)) {
             productType = "com.apple.product-type.library.static";
+        } else if (isDylibLibrary(linkTarget)) {
+            productType = "com.apple.product-type.library.dynamic";            
         }
 
         PBXObjectRef nativeTarget = createPBXNativeTarget(projectName,
@@ -504,6 +510,16 @@ public final class XcodeProjectWriter
         return (outPath.lastIndexOf(".a") == outPath.length() - 2);
     }
 
+    /**
+     * Determines if linked target is a static library.
+     * @param linkTarget link target
+     * @return true if a static library
+     */
+    private static boolean isDylibLibrary(final TargetInfo linkTarget) {
+        String outPath = linkTarget.getOutput().getPath();
+        return (outPath.lastIndexOf(".dylib") == outPath.length() - 6 &&
+            outPath.length() > 6);
+    }
 
     /**
      * Create PBXFileReference.
