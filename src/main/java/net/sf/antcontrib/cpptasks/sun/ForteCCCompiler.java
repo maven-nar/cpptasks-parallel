@@ -91,13 +91,16 @@ public final class ForteCCCompiler extends GccCompatibleCCompiler {
                 break;
             case 1 :
             case 2 :
-                args.addElement("+w");
                 break;
             case 3 :
+                args.addElement("+w");
+                break;
             case 4 :
-            case 5 :
                 args.addElement("+w2");
                 break;
+            case 5 :
+                args.addElement("+w2");
+                args.addElement("-xwe");
         }
     }
     public File[] getEnvironmentIncludePath() {

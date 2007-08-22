@@ -70,4 +70,63 @@ public class TestForteCCCompiler extends TestCase {
         assertEquals(AbstractProcessor.DEFAULT_PROCESS_BID, compiler
                 .bid("foo.s"));
     }
+    /**
+     * Tests command line switches for warning = 0
+     */
+    public void testWarningLevel0() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 0);
+        assertEquals(1, args.size());
+        assertEquals("-w", args.elementAt(0));
+    }
+    /**
+     * Tests command line switches for warning = 1
+     */
+    public void testWarningLevel1() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 1);
+        assertEquals(0, args.size());
+    }
+    /**
+     * Tests command line switches for warning = 2
+     */
+    public void testWarningLevel2() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 2);
+        assertEquals(0, args.size());
+    }
+    /**
+     * Tests command line switches for warning = 3
+     */
+    public void testWarningLevel3() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 3);
+        assertEquals(1, args.size());
+        assertEquals("+w", args.elementAt(0));
+    }
+    /**
+     * Tests command line switches for warning = 4
+     */
+    public void testWarningLevel4() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 4);
+        assertEquals(1, args.size());
+        assertEquals("+w2", args.elementAt(0));
+    }
+    /**
+     * Tests command line switches for warning = 5
+     */
+    public void testWarningLevel5() {
+        ForteCCCompiler compiler = ForteCCCompiler.getInstance();
+        Vector args = new Vector();
+        compiler.addWarningSwitch(args, 5);
+        assertEquals(2, args.size());
+        assertEquals("+w2", args.elementAt(0));
+        assertEquals("-xwe", args.elementAt(1));
+    }
 }
