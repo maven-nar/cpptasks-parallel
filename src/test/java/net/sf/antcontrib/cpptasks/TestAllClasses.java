@@ -37,6 +37,8 @@ public class TestAllClasses extends TestSuite {
         addTestSuite(net.sf.antcontrib.cpptasks.compiler.TestCommandLineCompilerConfiguration.class);
         addTestSuite(net.sf.antcontrib.cpptasks.TestDependencyTable.class);
         addTestSuite(net.sf.antcontrib.cpptasks.types.TestDefineArgument.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.devstudio.TestDevStudio2005CCompiler.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.devstudio.TestDevStudioCCompiler.class);
         addTestSuite(net.sf.antcontrib.cpptasks.devstudio.TestDevStudioLinker.class);
         addTestSuite(net.sf.antcontrib.cpptasks.TestLinkerDef.class);
         addTestSuite(net.sf.antcontrib.cpptasks.TestTargetInfo.class);
@@ -52,6 +54,7 @@ public class TestAllClasses extends TestSuite {
         addTestSuite(net.sf.antcontrib.cpptasks.TestLinkerEnum.class);
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestAbstractLdLinker.class);
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestAbstractArLibrarian.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestGccLinker.class);
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestGccLinker.class);
     }
 }

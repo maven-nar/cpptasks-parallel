@@ -21,6 +21,7 @@ import net.sf.antcontrib.cpptasks.borland.BorlandResourceCompiler;
 import net.sf.antcontrib.cpptasks.compaq.CompaqVisualFortranCompiler;
 import net.sf.antcontrib.cpptasks.compiler.Compiler;
 import net.sf.antcontrib.cpptasks.devstudio.DevStudioCCompiler;
+import net.sf.antcontrib.cpptasks.devstudio.DevStudio2005CCompiler;
 import net.sf.antcontrib.cpptasks.devstudio.DevStudioMIDLCompiler;
 import net.sf.antcontrib.cpptasks.devstudio.DevStudioResourceCompiler;
 import net.sf.antcontrib.cpptasks.gcc.GccCCompiler;
@@ -65,6 +66,10 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
  * <tr>
  * <td>msvc</td>
  * <td>Microsoft Visual C++</td>
+ * </tr>
+ * <tr>
+ * <td>msvc8</td>
+ * <td>Microsoft Visual C++ 8</td>
  * </tr>
  * <tr>
  * <td>bcc</td>
@@ -182,6 +187,7 @@ public class CompilerEnum extends EnumeratedAttribute {
             new ProcessorEnumValue("c++", GccCCompiler.getCppInstance()),
             new ProcessorEnumValue("g77", GccCCompiler.getG77Instance()),
             new ProcessorEnumValue("msvc", DevStudioCCompiler.getInstance()),
+            new ProcessorEnumValue("msvc8", DevStudio2005CCompiler.getInstance()),
             new ProcessorEnumValue("bcc", BorlandCCompiler.getInstance()),
             new ProcessorEnumValue("msrc", DevStudioResourceCompiler
                     .getInstance()),
