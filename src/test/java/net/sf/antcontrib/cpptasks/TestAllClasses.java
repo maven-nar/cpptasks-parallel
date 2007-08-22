@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2002-2004 The Ant-Contrib project
+ * Copyright 2002-2007 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -56,5 +56,8 @@ public class TestAllClasses extends TestSuite {
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestAbstractArLibrarian.class);
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestGccLinker.class);
         addTestSuite(net.sf.antcontrib.cpptasks.gcc.TestGccLinker.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.sun.TestForteCCCompiler.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.hp.TestaCCCompiler.class);
+        addTestSuite(net.sf.antcontrib.cpptasks.ibm.TestVisualAgeCCompiler.class);
     }
 }

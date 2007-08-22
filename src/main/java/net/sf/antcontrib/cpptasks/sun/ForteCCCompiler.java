@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2001-2004 The Ant-Contrib project
+ * Copyright 2001-2007 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,13 @@ import net.sf.antcontrib.cpptasks.OptimizationEnum;
  * @author Curt Arnold
  */
 public final class ForteCCCompiler extends GccCompatibleCCompiler {
-    private static final ForteCCCompiler instance = new ForteCCCompiler("CC");
+    private final static String[] headerExtensions = new String[]{".h", ".hpp",
+            ".inl"};
+    private final static String[] sourceExtensions = new String[]{".c", ".cc",
+            ".cxx", ".cpp", ".c++", ".i", ".s"};
+    
+    private static final ForteCCCompiler instance = new ForteCCCompiler("CC", 
+            sourceExtensions, headerExtensions);
     /**
      * Gets singleton instance of this class
      */
@@ -42,8 +48,10 @@ public final class ForteCCCompiler extends GccCompatibleCCompiler {
      * Private constructor. Use ForteCCCompiler.getInstance() to get singleton
      * instance of this class.
      */
-    private ForteCCCompiler(String command) {
-        super(command, "-V", false, null, false, null);
+    private ForteCCCompiler(String command, String[] sourceExtensions, 
+            String[] headerExtensions) {
+        super(command, "-V", sourceExtensions, headerExtensions, false, null, 
+                false, null);
     }
     public void addImpliedArgs(final Vector args, 
     		final boolean debug,
