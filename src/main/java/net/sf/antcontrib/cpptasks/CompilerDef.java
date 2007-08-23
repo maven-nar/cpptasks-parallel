@@ -483,7 +483,7 @@ public final class CompilerDef extends ProcessorDef {
     }
     /**
      * Enumerated attribute with the values "none", "severe", "default",
-     * "production", "diagnostic", and "failtask".
+     * "production", "diagnostic", and "aserror".
      */
     public void setWarnings(WarningLevelEnum level) {
         warnings = level.getIndex();

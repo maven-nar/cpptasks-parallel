@@ -51,9 +51,8 @@ import org.apache.tools.ant.types.Environment;
  * Resource files.
  * </p>
  * 
- * 
  * <p>
- * Copyright (c) 2001-2006, The Ant-Contrib project.
+ * Copyright (c) 2001-2007, The Ant-Contrib project.
  * </p>
  * 
  * <p>
@@ -67,23 +66,54 @@ import org.apache.tools.ant.types.Environment;
  * </p>
  * 
  * <p>
- * THIS SOFTWARE IS PROVIDED 'AS-IS', See http://www.apache.org/licenses/LICENSE-2.0 for
- * additional disclaimers.
+ * THIS SOFTWARE IS PROVIDED 'AS-IS', See 
+ * http://www.apache.org/licenses/LICENSE-2.0 for additional disclaimers.
  * </p>
  * 
  * To use:
  * <ol>
- * <li>Place cpptasks.jar into Ant's classpath by placing in Ant's lib directory,
- * adding to CLASSPATH environment variable or using the -lib command line option.</li>
- * <li>Add type and task definitions in build file:
- * <ul><li>Ant 1.6 or later: add xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks" to &lt;project&gt; element.</li>
- * <li>Ant 1.5 or later: Add &lt;taskdef resource="cpptasks.tasks"/&gt; and &lt;typedef
- * resource="cpptasks.types"/&gt; to body of &lt;project&gt; element.</li></ul></li>
- * <li>Add &lt;cc/&gt;, &lt;compiler/&gt; and &lt;linker/&gt; elements to
- * project.</li>
- * <li>Set path and environment variables to be able to run compiler from
- * command line.</li>
- * <li>Build project.</li>
+ * <li>
+ * Place cpptasks.jar into Ant's classpath by placing it in Ant's lib 
+ * directory, adding it to the CLASSPATH environment variable or by using the
+ * -lib command line option.
+ *  </li>
+ * <li>
+ * Add type and task definitions to the build file:
+ * <ul>
+ * <li>
+ * Ant 1.6 or later:
+ * <ul>
+ * <li>Add xmlns:cpptasks="antlib:net.sf.antcontrib.cpptasks" to 
+ * &lt;project&gt; element.
+ * </li>
+ * <li>
+ * Add &lt;cpptasks:cc/&gt;, &lt;cpptasks:compiler/&gt; and 
+ * &lt;cpptasks:linker/&gt; elements to the project.
+ * </li>
+ * </ul>
+ * </li>
+ * <li>
+ * Ant 1.5 or later:
+ * <ul>
+ * <li>Add &lt;taskdef resource="cpptasks.tasks"/&gt; and 
+ * &lt;typedef resource="cpptasks.types"/&gt; to body of &lt;project&gt; 
+ * element.
+ * </li>
+ * <li>
+ * Add &lt;cc/&gt;, &lt;compiler/&gt; and &lt;linker/&gt; elements to the
+ * project.
+ * </li>
+ * </ul>
+ * </li>
+ * </ul>
+ * </li>
+ * <li>
+ * Set the path and environment variables to be able to run compiler from
+ * command line.
+ * </li>
+ * <li>
+ * Build the project.
+ * </li>
  * </ol>
  * 
  * @author Adam Murdoch
@@ -1337,7 +1367,7 @@ public class CCTask extends Task {
     
     /**
      * Enumerated attribute with the values "none", "severe", "default",
-     * "production", "diagnostic", and "failtask".
+     * "production", "diagnostic", and "aserror".
      */
     public void setWarnings(WarningLevelEnum level) {
         compilerDef.setWarnings(level);
