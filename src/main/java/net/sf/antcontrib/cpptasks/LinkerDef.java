@@ -115,30 +115,6 @@ public class LinkerDef extends ProcessorDef {
         sysLibrarySets.addElement(libset);
     }
     
-    
-    public ProcessorConfiguration createConfiguration(CCTask task,
-            LinkType linkType, ProcessorDef baseDef, 
-			TargetDef targetPlatform,
-			VersionInfo versionInfo) {
-        //
-        //    must combine some local context (the linkType)
-        //       with the referenced element
-        //
-        //    get a pointer to the definition (either local or referenced)
-        ProcessorDef thisDef = this;
-        if (isReference()) {
-            thisDef = ((ProcessorDef) getCheckedRef(ProcessorDef.class,
-                    "ProcessorDef"));
-        }
-        //
-        //    find the appropriate processor (combines local linkType
-        //       with possibly remote linker name)
-        Processor proc = getProcessor();
-        proc = proc.getLinker(linkType);
-        ProcessorDef[] defaultProviders = getDefaultProviders(baseDef);
-        return proc.createConfiguration(task, linkType, defaultProviders,
-                thisDef, targetPlatform, versionInfo);
-    }
     public void execute() throws org.apache.tools.ant.BuildException {
         throw new org.apache.tools.ant.BuildException(
                 "Not an actual task, but looks like one for documentation purposes");
@@ -281,6 +257,12 @@ public class LinkerDef extends ProcessorDef {
         }
         return linker;
     }
+    
+    public Processor getProcessor(LinkType linkType) {
+      Processor proc = getProcessor();
+      return proc.getLinker(linkType);
+    }
+   
     public int getStack(LinkerDef[] defaultProviders, int index) {
         if (isReference()) {
             return ((LinkerDef) getCheckedRef(LinkerDef.class, "LinkerDef"))

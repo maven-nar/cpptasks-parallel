@@ -26,8 +26,10 @@ import net.sf.antcontrib.cpptasks.types.FlexLong;
 import net.sf.antcontrib.cpptasks.types.LibrarySet;
 import net.sf.antcontrib.cpptasks.types.LinkerArgument;
 import net.sf.antcontrib.cpptasks.types.SystemLibrarySet;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FlexInteger;
+import org.apache.tools.ant.types.Reference;
 
 /**
  * Tests for LinkerDef class.
@@ -147,6 +149,35 @@ public final class TestLinkerDef
     LinkerDef extendedLinker = (LinkerDef) createExtendedProcessorDef(
         baseLinker);
     String[] preArgs = getPreArguments(extendedLinker);
+    assertEquals(1, preArgs.length);
+    assertEquals("/base", preArgs[0]);
+  }
+
+  /**
+   * Verify linkerarg's that appear in the base linker are effective when 
+   * creating the command line for a linker that extends it, even if the 
+   * linker is brought in through a reference.
+   */
+  public void testExtendsLinkerArgsViaReference() {
+    Project project = new Project();
+    LinkerDef baseLinker = new LinkerDef();
+    baseLinker.setProject(project);
+    baseLinker.setId("base");
+    project.addReference("base", baseLinker);
+    LinkerArgument linkerArg = new LinkerArgument();
+    linkerArg.setValue("/base");
+    baseLinker.addConfiguredLinkerArg(linkerArg);
+
+    LinkerDef extendedLinker = (LinkerDef) createExtendedProcessorDef(
+        baseLinker);
+    extendedLinker.setProject(project);
+    extendedLinker.setId("extended");
+    project.addReference("extended", extendedLinker);
+
+    LinkerDef linkerRef = new LinkerDef();
+    linkerRef.setProject(project);
+    linkerRef.setRefid(new Reference(project, "extended"));
+    String[] preArgs = getPreArguments(linkerRef);
     assertEquals(1, preArgs.length);
     assertEquals("/base", preArgs[0]);
   }

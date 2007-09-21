@@ -188,7 +188,7 @@ public abstract class ProcessorDef extends DataType {
                     baseDef, targetPlatform, versionInfo);
         }
         ProcessorDef[] defaultProviders = getDefaultProviders(baseDef);
-        Processor proc = getProcessor();
+        Processor proc = getProcessor(linkType);
         return proc.createConfiguration(task, linkType, defaultProviders, this, targetPlatform, versionInfo);
     }
     /**
@@ -357,6 +357,17 @@ public abstract class ProcessorDef extends DataType {
             }
         }
         return processor;
+    }
+
+    /**
+     * Obtains the appropriate processor (compiler, linker) based on the 
+     * LinkType.
+     *
+     * @return processor
+     */
+    protected Processor getProcessor(LinkType linkType) {
+      // by default ignore the linkType.
+      return getProcessor();
     }
     /**
      * Gets a boolean value indicating whether all targets must be rebuilt
