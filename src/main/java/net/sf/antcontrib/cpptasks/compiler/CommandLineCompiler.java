@@ -285,6 +285,32 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
         //    add all appropriate defines and undefines
         //
         buildDefineArguments(defaultProviders, args);
+        int warnings = specificDef.getWarnings(defaultProviders, 0);
+        addWarningSwitch(args, warnings);
+        Enumeration argEnum = cmdArgs.elements();
+        int endCount = 0;
+        while (argEnum.hasMoreElements()) {
+            CommandLineArgument arg = (CommandLineArgument) argEnum
+                    .nextElement();
+            switch (arg.getLocation()) {
+                case 1 :
+                    args.addElement(arg.getValue());
+                    break;
+                case 2 :
+                    endCount++;
+                    break;
+            }
+        }
+        String[] endArgs = new String[endCount];
+        argEnum = cmdArgs.elements();
+        int index = 0;
+        while (argEnum.hasMoreElements()) {
+            CommandLineArgument arg = (CommandLineArgument) argEnum
+                    .nextElement();
+            if (arg.getLocation() == 2) {
+                endArgs[index++] = arg.getValue();
+            }
+        }
         //
         //   Want to have distinct set of arguments with relative
         //      path names for includes that are used to build
@@ -327,37 +353,14 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
         addIncludes(baseDirPath, sysIncPath, args, null, null);
         StringBuffer buf = new StringBuffer(getIdentifier());
         for (int i = 0; i < relativeArgs.size(); i++) {
-            buf.append(relativeArgs.elementAt(i));
             buf.append(' ');
+            buf.append(relativeArgs.elementAt(i));
         }
-        buf.setLength(buf.length() - 1);
+        for (int i = 0; i < endArgs.length; i++) {
+            buf.append(' ');
+            buf.append(endArgs[i]);
+        }
         String configId = buf.toString();
-        int warnings = specificDef.getWarnings(defaultProviders, 0);
-        addWarningSwitch(args, warnings);
-        Enumeration argEnum = cmdArgs.elements();
-        int endCount = 0;
-        while (argEnum.hasMoreElements()) {
-            CommandLineArgument arg = (CommandLineArgument) argEnum
-                    .nextElement();
-            switch (arg.getLocation()) {
-                case 1 :
-                    args.addElement(arg.getValue());
-                    break;
-                case 2 :
-                    endCount++;
-                    break;
-            }
-        }
-        String[] endArgs = new String[endCount];
-        argEnum = cmdArgs.elements();
-        int index = 0;
-        while (argEnum.hasMoreElements()) {
-            CommandLineArgument arg = (CommandLineArgument) argEnum
-                    .nextElement();
-            if (arg.getLocation() == 2) {
-                endArgs[index++] = arg.getValue();
-            }
-        }
         String[] argArray = new String[args.size()];
         args.copyInto(argArray);
         boolean rebuild = specificDef.getRebuild(baseDefs, 0);
