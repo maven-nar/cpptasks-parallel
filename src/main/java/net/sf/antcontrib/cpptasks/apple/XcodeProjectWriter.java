@@ -169,8 +169,13 @@ public final class XcodeProjectWriter
         //
         //    add project to property list
         //
+        //
+        //   Calculate path (typically several ../..) of the root directory
+        //        (where build.xml lives) relative to the XCode project directory.
+        //         XCode 3.0 will now prompt user to supply the value if not specified.
+        String projectRoot = CUtil.getRelativePath(basePath, projectDef.getProject().getBaseDir());
         PBXObjectRef project = createPBXProject(compilerConfigurations, mainGroup,
-                projectDirPath, projectTargets);
+                projectDirPath, projectRoot, projectTargets);
         objects.put(project.getID(), project.getProperties());
 
 
@@ -564,11 +569,13 @@ public final class XcodeProjectWriter
      * @param mainGroup main group.
      * @param projectDirPath project directory path.
      * @param targets targets.
+     * @param projectRoot projectRoot directory relative to 
      * @return project.
      */
     private static PBXObjectRef createPBXProject(final PBXObjectRef buildConfigurationList,
                                        final PBXObjectRef mainGroup,
                                        final String projectDirPath,
+                                       final String projectRoot,
                                        final List targets) {
         Map map = new HashMap();
         map.put("isa", "PBXProject");
@@ -577,6 +584,7 @@ public final class XcodeProjectWriter
         map.put("mainGroup", mainGroup.getID());
         map.put("projectDirPath", projectDirPath);
         map.put("targets", targets);
+        map.put("projectRoot", projectRoot);
         return new PBXObjectRef(map);
     }
 

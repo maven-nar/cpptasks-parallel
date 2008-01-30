@@ -21,5 +21,5 @@
 
 int main(int argc, const char** argv) {
    puts("Hello, World.");
-   return 1;
+   return 0;
 }
