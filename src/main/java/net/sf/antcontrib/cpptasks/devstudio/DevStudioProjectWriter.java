@@ -16,26 +16,30 @@
  */
 package net.sf.antcontrib.cpptasks.devstudio;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
 import net.sf.antcontrib.cpptasks.CCTask;
 import net.sf.antcontrib.cpptasks.CUtil;
 import net.sf.antcontrib.cpptasks.TargetInfo;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineLinkerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
+import net.sf.antcontrib.cpptasks.ide.DependencyDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.util.StringUtils;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Writes a Microsoft Visual Studio 97 or Visual Studio 6 project file.
@@ -60,6 +64,24 @@ public final class DevStudioProjectWriter
     this.version = versionArg;
   }
 
+  private static String toProjectName(final String name) {
+      //
+      //    some characters are apparently not allowed in VS project names
+      //       but have not been able to find them documented
+      //       limiting characters to alphas, numerics and hyphens
+      StringBuffer projectNameBuf = new StringBuffer(name);
+      for (int i = 0; i < projectNameBuf.length(); i++) {
+        final char ch = projectNameBuf.charAt(i);
+        if (!((ch >= 'a' && ch <= 'z')
+               || (ch >= 'A' && ch <= 'Z')
+               || (ch >= '0' && ch <= '9'))) {
+          projectNameBuf.setCharAt(i, '_');
+        }
+      }
+      return projectNameBuf.toString();
+
+  }
+
   /**
    *  Writes a project definition file.
    * @param fileName File name base, writer may append appropriate extension
@@ -81,22 +103,12 @@ public final class DevStudioProjectWriter
     //    some characters are apparently not allowed in VS project names
     //       but have not been able to find them documented
     //       limiting characters to alphas, numerics and hyphens
-    StringBuffer projectNameBuf;
     String projectName = projectDef.getName();
     if (projectName != null) {
-      projectNameBuf = new StringBuffer(projectName);
+      projectName = toProjectName(projectName);
     } else {
-      projectNameBuf = new StringBuffer(fileName.getName());
+      projectName = toProjectName(fileName.getName());
     }
-    for (int i = 0; i < projectNameBuf.length(); i++) {
-      final char ch = projectNameBuf.charAt(i);
-      if (!((ch >= 'a' && ch <= 'z')
-             || (ch >= 'A' && ch <= 'Z')
-             || (ch >= '0' && ch <= '9'))) {
-        projectNameBuf.setCharAt(i, '_');
-      }
-    }
-    projectName = projectNameBuf.toString();
 
     final String basePath = fileName.getAbsoluteFile().getParent();
 
@@ -187,10 +199,10 @@ public final class DevStudioProjectWriter
     String buildDirPath = CUtil.getRelativePath(basePath, buildDir);
 
     writer.write("# PROP BASE Output_Dir \"");
-    writer.write(buildDirPath);
+    writer.write(toWindowsPath(buildDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP BASE Intermediate_Dir \"");
-    writer.write(objDirPath);
+    writer.write(toWindowsPath(objDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP BASE Target_Dir \"\"\r\n");
     writer.write("# PROP Use_MFC 0\r\n");
@@ -201,10 +213,10 @@ public final class DevStudioProjectWriter
       writer.write("0\r\n");
     }
     writer.write("# PROP Output_Dir \"");
-    writer.write(buildDirPath);
+    writer.write(toWindowsPath(buildDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP Intermediate_Dir \"");
-    writer.write(objDirPath);
+    writer.write(toWindowsPath(objDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP Target_Dir \"\"\r\n");
     writeCompileOptions(writer, basePath, compilerConfig);
@@ -277,30 +289,71 @@ public final class DevStudioProjectWriter
     //    write workspace file
     //
     writer = new BufferedWriter(new FileWriter(dswFile));
-
-    writer.write("Microsoft Developer Studio Workspace File, Format Version ");
-    writer.write(version);
-    writer.write("\r\n");
-    writer.write("# WARNING: DO NOT EDIT OR DELETE");
-    writer.write(" THIS WORKSPACE FILE!\r\n\r\n");
-
-    writer.write("############################################");
-    writer.write("###################################\r\n\r\n");
-    writer.write("Project: \"" + projectName + "\"=.\\"
-                 + dspFile.getName()
-                 + " - Package Owner=<4>\r\n\r\n");
-
-    writer.write("Package=<5>\r\n{{{\r\n}}}\r\n\r\n");
-    writer.write("Package=<4>\r\n{{{\r\n}}}\r\n\r\n");
-    writer.write("######################################");
-    writer.write("#########################################\r\n\r\n");
-
-    writer.write("Global:\r\n\r\nPackage=<5>\r\n{{{\r\n}}}");
-    writer.write("\r\n\r\nPackage=<3>\r\n{{{\r\n}}}\r\n\r\n");
-
-    writer.write("########################################");
-    writer.write("#######################################\r\n\r\n");
+    writeWorkspace(writer, projectDef, projectName, dspFile);
     writer.close();
+
+  }
+
+  private static void writeWorkspaceProject(final Writer writer,
+                                     final String projectName,
+                                     final String projectFile,
+                                     final List dependsOn) throws IOException {
+      writer.write("############################################");
+      writer.write("###################################\r\n\r\n");
+      writer.write("Project: \"" + projectName + "\"="
+                   + projectFile
+                   + " - Package Owner=<4>\r\n\r\n");
+
+      writer.write("Package=<5>\r\n{{{\r\n}}}\r\n\r\n");
+      writer.write("Package=<4>\r\n{{{\r\n");
+      if (dependsOn != null) {
+        for(Iterator iter = dependsOn.iterator(); iter.hasNext();) {
+            writer.write("    Begin Project Dependency\r\n");
+            writer.write("    Project_Dep_name " + toProjectName(String.valueOf(iter.next())) + "\r\n");
+            writer.write("    End Project Dependency\r\n");
+        }
+      }
+      writer.write("}}}\r\n\r\n");
+      writer.write("######################################");
+      writer.write("#########################################\r\n\r\n");
+
+  }
+
+  private void writeWorkspace(final Writer writer,
+                              final ProjectDef project,
+                              final String projectName,
+                              final File dspFile) throws IOException {
+
+      writer.write("Microsoft Developer Studio Workspace File, Format Version ");
+      writer.write(version);
+      writer.write("\r\n");
+      writer.write("# WARNING: DO NOT EDIT OR DELETE");
+      writer.write(" THIS WORKSPACE FILE!\r\n\r\n");
+
+      List dependencies = project.getDependencies();
+      List projectDeps = new ArrayList();
+      String basePath = dspFile.getParent();
+      for(Iterator iter = dependencies.iterator(); iter.hasNext();) {
+          DependencyDef dep = (DependencyDef) iter.next();
+          if (dep.getFile() != null) {
+            String projName = toProjectName(dep.getName());
+            projectDeps.add(projName);
+            String depProject = toWindowsPath(
+                      CUtil.getRelativePath(basePath,
+                              new File(dep.getFile() + ".dsp")));
+            writeWorkspaceProject(writer, projName, depProject, dep.getDependsList());
+          }
+      }
+
+
+
+      writeWorkspaceProject(writer, projectName, ".\\" + dspFile.getName(), projectDeps);
+
+      writer.write("Global:\r\n\r\nPackage=<5>\r\n{{{\r\n}}}");
+      writer.write("\r\n\r\nPackage=<3>\r\n{{{\r\n}}}\r\n\r\n");
+
+      writer.write("########################################");
+      writer.write("#######################################\r\n\r\n");
 
   }
 
@@ -344,7 +397,7 @@ public final class DevStudioProjectWriter
         && !relativePath.startsWith("\\")) {
       relativePath = ".\\" + relativePath;
     }
-    writer.write(relativePath);
+    writer.write(toWindowsPath(relativePath));
     writer.write("\r\n# End Source File\r\n");
   }
 
@@ -462,7 +515,7 @@ public final class DevStudioProjectWriter
     for (int i = 0; i < includePath.length; i++) {
       options.append(" /I \"");
       String relPath = CUtil.getRelativePath(baseDir, includePath[i]);
-      options.append(relPath);
+      options.append(toWindowsPath(relPath));
       options.append('"');
     }
 
@@ -494,6 +547,29 @@ public final class DevStudioProjectWriter
 
   }
 
+
+
+
+ /**
+  *  Determines if source file has a system path,
+  *    that is part of the compiler or platform.
+  *   @param source source, may not be null.
+  *   @return true is source file appears to be system library
+  *         and its path should be discarded.
+  */
+  private static boolean isSystemPath(final File source) {
+	  String lcPath = source.toString().toLowerCase(java.util.Locale.US);
+	  return lcPath.indexOf("platformsdk") != -1
+	      || lcPath.indexOf("microsoft") != -1;
+  }
+
+  private static String toWindowsPath(final String path) {
+      if (File.separatorChar != '\\' && path.indexOf(File.separatorChar) != -1) {
+          return StringUtils.replace(path, File.separator, "\\");
+      }
+      return path;
+  }
+
   /**
    * Writes link options.
    * @param writer Writer writer
@@ -523,17 +599,25 @@ public final class DevStudioProjectWriter
         //   if file was not compiled or otherwise generated
         //
         if (targets.get(linkSources[i].getName()) == null) {
-          String relPath = CUtil.getRelativePath(basePath, linkSources[i]);
+          //
+          //   if source appears to be a system library or object file
+          //      just output the name of the file (advapi.lib for example)
+          //      otherwise construct a relative path.
+          //
+          String relPath = linkSources[i].getName();
+          if (!isSystemPath(linkSources[i])) {
+              relPath = CUtil.getRelativePath(basePath, linkSources[i]);
+          }
           //
           //   if path has an embedded space then
           //      must quote
           if (relPath.indexOf(' ') > 0) {
             options.append(" \"");
-            options.append(relPath);
+            options.append(toWindowsPath(relPath));
             options.append("\"");
           } else {
             options.append(' ');
-            options.append(relPath);
+            options.append(toWindowsPath(relPath));
           }
         }
       }

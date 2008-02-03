@@ -25,6 +25,7 @@ import org.apache.tools.ant.types.DataType;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -82,6 +83,11 @@ public final class ProjectDef
    *
    */
   private File objDir;
+
+    /**
+     * List of dependency definitions.
+     */
+  private List dependencies = new ArrayList();
 
   /**
    * Constructor.
@@ -318,6 +324,21 @@ public final class ProjectDef
   public void getObjdir(final File oDir) {
     this.objDir = oDir;
   }
+
+    /**
+     * FileSet containing project files that should be imported
+     *   as dependencies
+      * @param dependency dependency.
+     */
+  public void addDependency(final DependencyDef dependency) {
+        dependencies.add(dependency);
+
+  }
+
+  public List getDependencies() {
+      return new ArrayList(dependencies);
+  }
+
 
   /**
    * Required by documentation generator.
