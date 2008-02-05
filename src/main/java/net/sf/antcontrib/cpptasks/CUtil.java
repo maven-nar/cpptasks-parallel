@@ -28,6 +28,8 @@ import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.LogStreamHandler;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.util.StringUtils;
+
 /**
  * Some utilities used by the CC and Link tasks.
  *
@@ -484,4 +486,14 @@ public class CUtil {
     public static boolean isSignificantlyAfter(long time1, long time2) {
       return time1 > (time2 + FILETIME_EPSILON);
     }
+
+
+    public static String toWindowsPath(final String path) {
+      if (File.separatorChar != '\\' && path.indexOf(File.separatorChar) != -1) {
+          return StringUtils.replace(path, File.separator, "\\");
+      }
+      return path;
+  }
+    
+
 }

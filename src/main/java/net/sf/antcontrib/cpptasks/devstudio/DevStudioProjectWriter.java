@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2004 The Ant-Contrib project
+ * Copyright 2004-2008 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -199,10 +199,10 @@ public final class DevStudioProjectWriter
     String buildDirPath = CUtil.getRelativePath(basePath, buildDir);
 
     writer.write("# PROP BASE Output_Dir \"");
-    writer.write(toWindowsPath(buildDirPath));
+    writer.write(CUtil.toWindowsPath(buildDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP BASE Intermediate_Dir \"");
-    writer.write(toWindowsPath(objDirPath));
+    writer.write(CUtil.toWindowsPath(objDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP BASE Target_Dir \"\"\r\n");
     writer.write("# PROP Use_MFC 0\r\n");
@@ -213,10 +213,10 @@ public final class DevStudioProjectWriter
       writer.write("0\r\n");
     }
     writer.write("# PROP Output_Dir \"");
-    writer.write(toWindowsPath(buildDirPath));
+    writer.write(CUtil.toWindowsPath(buildDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP Intermediate_Dir \"");
-    writer.write(toWindowsPath(objDirPath));
+    writer.write(CUtil.toWindowsPath(objDirPath));
     writer.write("\"\r\n");
     writer.write("# PROP Target_Dir \"\"\r\n");
     writeCompileOptions(writer, basePath, compilerConfig);
@@ -338,7 +338,7 @@ public final class DevStudioProjectWriter
           if (dep.getFile() != null) {
             String projName = toProjectName(dep.getName());
             projectDeps.add(projName);
-            String depProject = toWindowsPath(
+            String depProject = CUtil.toWindowsPath(
                       CUtil.getRelativePath(basePath,
                               new File(dep.getFile() + ".dsp")));
             writeWorkspaceProject(writer, projName, depProject, dep.getDependsList());
@@ -397,7 +397,7 @@ public final class DevStudioProjectWriter
         && !relativePath.startsWith("\\")) {
       relativePath = ".\\" + relativePath;
     }
-    writer.write(toWindowsPath(relativePath));
+    writer.write(CUtil.toWindowsPath(relativePath));
     writer.write("\r\n# End Source File\r\n");
   }
 
@@ -515,7 +515,7 @@ public final class DevStudioProjectWriter
     for (int i = 0; i < includePath.length; i++) {
       options.append(" /I \"");
       String relPath = CUtil.getRelativePath(baseDir, includePath[i]);
-      options.append(toWindowsPath(relPath));
+      options.append(CUtil.toWindowsPath(relPath));
       options.append('"');
     }
 
@@ -563,13 +563,6 @@ public final class DevStudioProjectWriter
 	      || lcPath.indexOf("microsoft") != -1;
   }
 
-  private static String toWindowsPath(final String path) {
-      if (File.separatorChar != '\\' && path.indexOf(File.separatorChar) != -1) {
-          return StringUtils.replace(path, File.separator, "\\");
-      }
-      return path;
-  }
-
   /**
    * Writes link options.
    * @param writer Writer writer
@@ -613,11 +606,11 @@ public final class DevStudioProjectWriter
           //      must quote
           if (relPath.indexOf(' ') > 0) {
             options.append(" \"");
-            options.append(toWindowsPath(relPath));
+            options.append(CUtil.toWindowsPath(relPath));
             options.append("\"");
           } else {
             options.append(' ');
-            options.append(toWindowsPath(relPath));
+            options.append(CUtil.toWindowsPath(relPath));
           }
         }
       }

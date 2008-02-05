@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2004-2006 The Ant-Contrib project
+ * Copyright 2004-2008 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -88,6 +88,19 @@ public final class VisualStudioNETProjectWriter
         this.trueLiteral = trueArg;
         this.falseLiteral = falseArg;
     }
+    
+ /**
+  *  Determines if source file has a system path,
+  *    that is part of the compiler or platform.
+  *   @param source source, may not be null.
+  *   @return true is source file appears to be system library
+  *         and its path should be discarded.
+  */
+  private static boolean isSystemPath(final File source) {
+	  String lcPath = source.toString().toLowerCase(java.util.Locale.US);
+	  return lcPath.indexOf("platformsdk") != -1
+	      || lcPath.indexOf("microsoft") != -1;
+  }
 
     /**
      * Get configuration name.
@@ -128,7 +141,7 @@ public final class VisualStudioNETProjectWriter
                                       final CCTask task) {
         File outFile = task.getOutfile();
         File buildDir = outFile.getParentFile();
-        return CUtil.getRelativePath(basePath, buildDir);
+        return CUtil.toWindowsPath(CUtil.getRelativePath(basePath, buildDir));
     }
 
     /**
@@ -140,7 +153,7 @@ public final class VisualStudioNETProjectWriter
     private String getIntermediateDirectory(final String basePath,
                                             final CCTask task) {
         File objDir = task.getObjdir();
-        return CUtil.getRelativePath(basePath, objDir);
+        return CUtil.toWindowsPath(CUtil.getRelativePath(basePath, objDir));
     }
 
 
@@ -224,12 +237,15 @@ public final class VisualStudioNETProjectWriter
      * @return value of AdditionalIncludeDirectories property.
      */
     private String getAdditionalIncludeDirectories(
+            final String basePath,
             final CommandLineCompilerConfiguration compilerConfig) {
         StringBuffer includeDirs = new StringBuffer();
         String[] args = compilerConfig.getPreArguments();
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("/I")) {
-                includeDirs.append(args[i].substring(2));
+                includeDirs.append(CUtil.toWindowsPath(
+                    CUtil.getRelativePath(basePath, 
+                        new File(args[i].substring(2)))));
                 includeDirs.append(';');
             }
         }
@@ -432,6 +448,7 @@ public final class VisualStudioNETProjectWriter
      * @throws SAXException thrown if error during serialization.
      */
     private void writeCompilerElement(final ContentHandler content,
+            final String basePath,
             final CommandLineCompilerConfiguration compilerConfig)
             throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
@@ -439,7 +456,7 @@ public final class VisualStudioNETProjectWriter
         addAttribute(attributes, "Optimization",
                 getOptimization(compilerConfig));
         addAttribute(attributes, "AdditionalIncludeDirectories",
-                getAdditionalIncludeDirectories(compilerConfig));
+                getAdditionalIncludeDirectories(basePath, compilerConfig));
         addAttribute(attributes, "PreprocessorDefinitions",
                 getPreprocessorDefinitions(compilerConfig));
         addAttribute(attributes, "MinimalRebuild",
@@ -559,18 +576,26 @@ public final class VisualStudioNETProjectWriter
           //   if file was not compiled or otherwise generated
           //
           if (targets.get(linkSources[i].getName()) == null) {
-            String relPath = CUtil.getRelativePath(basePath, linkSources[i]);
+            //
+            //   if source appears to be a system library or object file
+            //      just output the name of the file (advapi.lib for example)
+            //      otherwise construct a relative path.
+            //
+            String relPath = linkSources[i].getName();
+            if (!isSystemPath(linkSources[i])) {
+                relPath = CUtil.getRelativePath(basePath, linkSources[i]);
+            }
             //
             //   if path has an embedded space then
             //      must quote
             if (relPath.indexOf(' ') > 0) {
               buf.append('\"');
-              buf.append(relPath);
+              buf.append(CUtil.toWindowsPath(relPath));
               buf.append('\"');
             } else {
                buf.append(relPath);
             }
-            buf.append(';');
+            buf.append(' ');
           }
         }
         if (buf.length() > 0) {
@@ -689,7 +714,7 @@ public final class VisualStudioNETProjectWriter
 
         writeConfigurationStartTag(content, basePath, task, compilerConfig);
 
-        writeCompilerElement(content, compilerConfig);
+        writeCompilerElement(content, basePath, compilerConfig);
 
         writeLinkerElement(content, basePath, linkTarget, targets);
 

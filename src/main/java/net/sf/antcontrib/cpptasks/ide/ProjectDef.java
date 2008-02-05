@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2004-2006 The Ant-Contrib project
+ * Copyright 2004-2008 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -124,6 +124,10 @@ public final class ProjectDef
    * <tr>
    * <td>msvc8</td>
    * <td>Microsoft Visual C++ 2005</td>
+   * </tr>
+   * <tr>
+   * <td>msvc9</td>
+   * <td>Microsoft Visual C++ 2008</td>
    * </tr>
    * <tr>
    * <td>xcode</td>
