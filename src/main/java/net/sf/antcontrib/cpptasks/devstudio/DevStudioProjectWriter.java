@@ -25,6 +25,7 @@ import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
 import net.sf.antcontrib.cpptasks.ide.DependencyDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
+import net.sf.antcontrib.cpptasks.ide.CommentDef;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.util.StringUtils;
 
@@ -140,6 +141,9 @@ public final class DevStudioProjectWriter
     writer.write(this.version);
     writer.write("\r\n");
     writer.write("# ** DO NOT EDIT **\r\n\r\n");
+
+	writeComments(writer, projectDef.getComments());
+
     String outputType = task.getOuttype();
     String subsystem = task.getSubsystem();
     String configName = projectName;
@@ -329,6 +333,9 @@ public final class DevStudioProjectWriter
       writer.write("\r\n");
       writer.write("# WARNING: DO NOT EDIT OR DELETE");
       writer.write(" THIS WORKSPACE FILE!\r\n\r\n");
+
+	  writeComments(writer, project.getComments());
+
 
       List dependencies = project.getDependencies();
       List projectDeps = new ArrayList();
@@ -633,5 +640,21 @@ public final class DevStudioProjectWriter
     options.append("\r\n");
     writer.write(baseOptions.toString());
     writer.write(options.toString());
+  }
+
+  private static void writeComments(final Writer writer,
+                             final List comments) throws IOException {
+		for(Iterator iter = comments.iterator();iter.hasNext();) {
+			String comment = ((CommentDef) iter.next()).getText();
+			if (comment != null) {
+				int start = 0;
+				for(int end = comment.indexOf('\n'); 
+					end != -1; 
+					end = comment.indexOf('\n', start)) {
+					writer.write("#" + comment.substring(start, end) + "\r\n");
+					start = end + 1;
+				}
+			}	
+		}
   }
 }

@@ -89,6 +89,11 @@ public final class ProjectDef
      */
   private List dependencies = new ArrayList();
 
+     /**
+	  *   List of comments.
+	  */
+  private List comments = new ArrayList();
+
   /**
    * Constructor.
    *
@@ -330,9 +335,8 @@ public final class ProjectDef
   }
 
     /**
-     * FileSet containing project files that should be imported
-     *   as dependencies
-      * @param dependency dependency.
+     *  Add a dependency definition to the project.  
+     * @param dependency dependency.
      */
   public void addDependency(final DependencyDef dependency) {
         dependencies.add(dependency);
@@ -343,6 +347,19 @@ public final class ProjectDef
       return new ArrayList(dependencies);
   }
 
+
+    /**
+	 *  Add comment for the generated project file.
+     * @param comment comment, may not be null.
+     */
+  public void addComment(final CommentDef comment) {
+        comments.add(comment);
+
+  }
+
+  public List getComments() {
+      return new ArrayList(comments);
+  }
 
   /**
    * Required by documentation generator.

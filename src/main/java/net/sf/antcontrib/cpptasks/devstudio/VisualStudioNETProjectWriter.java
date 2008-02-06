@@ -23,6 +23,7 @@ import net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineLinkerConfiguration;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
+import net.sf.antcontrib.cpptasks.ide.CommentDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import org.apache.tools.ant.BuildException;
 import org.apache.xml.serialize.OutputFormat;
@@ -690,10 +691,16 @@ public final class VisualStudioNETProjectWriter
 
         OutputStream outStream = new FileOutputStream(fileName + ".vcproj");
         OutputFormat format = new OutputFormat("xml", "UTF-8", true);
-        Serializer serializer = new XMLSerializer(outStream, format);
+        XMLSerializer serializer = new XMLSerializer(outStream, format);
         ContentHandler content = serializer.asContentHandler();
         String basePath = fileName.getParentFile().getAbsolutePath();
         content.startDocument();
+        
+        for(Iterator iter = projectDef.getComments().iterator(); iter.hasNext(); ) {
+			String comment = ((CommentDef) iter.next()).getText();
+			serializer.comment(comment);
+        }
+        
         AttributesImpl emptyAttrs = new AttributesImpl();
 
         AttributesImpl attributes = new AttributesImpl();
