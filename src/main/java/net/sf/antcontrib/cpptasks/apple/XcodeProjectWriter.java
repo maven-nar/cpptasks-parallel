@@ -23,6 +23,7 @@ import net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.CommandLineLinkerConfiguration;
 import net.sf.antcontrib.cpptasks.compiler.ProcessorConfiguration;
 import net.sf.antcontrib.cpptasks.gcc.GccCCompiler;
+import net.sf.antcontrib.cpptasks.ide.DependencyDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import org.apache.tools.ant.BuildException;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -165,21 +167,12 @@ public final class XcodeProjectWriter
         PBXObjectRef compilerConfigurations =
                 addProjectConfigurationList(objects,
                         basePath,
+                        projectDef.getDependencies(),
                         compilerConfig,
                         linkerConfig);
 
         String projectDirPath = "";
         List projectTargets = new ArrayList();
-
-        //
-        //   add description of native target (that is the executable or
-        //      shared library)
-        //
-        PBXObjectRef nativeTarget =
-                addNativeTarget(objects, linkTarget, product,
-                        projectName, sourceGroupChildren);
-        projectTargets.add(nativeTarget);
-
 
         //
         //    add project to property list
@@ -193,6 +186,26 @@ public final class XcodeProjectWriter
         PBXObjectRef project = createPBXProject(compilerConfigurations, mainGroup,
                 projectDirPath, projectRoot, projectTargets);
         objects.put(project.getID(), project.getProperties());
+
+        List frameworkBuildFiles = new ArrayList();
+        for (Iterator iter = projectDef.getDependencies().iterator(); iter.hasNext();) {
+            DependencyDef dependency = (DependencyDef) iter.next();
+            PBXObjectRef buildFile = addDependency(objects, project, groups, basePath, dependency);
+            if (buildFile != null) {
+                frameworkBuildFiles.add(buildFile);
+            }
+        }
+        //
+        //   add description of native target (that is the executable or
+        //      shared library)
+        //
+        PBXObjectRef nativeTarget =
+                addNativeTarget(objects, linkTarget, product,
+                        projectName, sourceGroupChildren, frameworkBuildFiles);
+        projectTargets.add(nativeTarget);
+
+
+
 
 
         //
@@ -218,6 +231,59 @@ public final class XcodeProjectWriter
         }
     }
 
+
+    /**
+     * Adds a dependency to the object graph.
+     * @param objects
+     * @param project
+     * @param mainGroupChildren
+     * @param baseDir
+     * @param dependency
+     * @return PBXBuildFile to add to PBXFrameworksBuildPhase.
+     */
+    private PBXObjectRef addDependency(final Map objects,
+                               final PBXObjectRef project,
+                               final List mainGroupChildren,
+                               final String baseDir,
+                               final DependencyDef dependency) {
+        if (dependency.getFile() != null) {
+            File xcodeDir = new File(dependency.getFile().getAbsolutePath() + ".xcodeproj");
+            if (xcodeDir.exists()) {
+                PBXObjectRef xcodePrj = createPBXFileReference("SOURCE_ROOT", baseDir, xcodeDir);
+                mainGroupChildren.add(xcodePrj);
+                objects.put(xcodePrj.getID(), xcodePrj.getProperties());
+
+                int proxyType = 2;
+                PBXObjectRef proxy = createPBXContainerItemProxy(
+                        xcodePrj, proxyType, dependency.getName());
+                objects.put(proxy.getID(), proxy.getProperties());
+
+                PBXObjectRef referenceProxy = createPBXReferenceProxy(proxy, dependency);
+                objects.put(referenceProxy.getID(), referenceProxy.getProperties());
+
+                PBXObjectRef buildFile = createPBXBuildFile(referenceProxy, Collections.EMPTY_MAP);
+                objects.put(buildFile.getID(), buildFile.getProperties());
+
+                List productsChildren = new ArrayList();
+                productsChildren.add(referenceProxy);
+                PBXObjectRef products = createPBXGroup("Products", "<group>", productsChildren);
+                objects.put(products.getID(), products.getProperties());
+
+                Map projectReference = new HashMap();
+                projectReference.put("ProductGroup", products);
+                projectReference.put("ProjectRef", xcodePrj);
+
+                List projectReferences = (List) project.getProperties().get("ProjectReferences");
+                if (projectReferences == null) {
+                    projectReferences = new ArrayList();
+                    project.getProperties().put("ProjectReferences", projectReferences);
+                }
+                projectReferences.add(projectReference);
+                return buildFile;
+            }
+        }
+        return null;
+    }
 
     /**
      * Add documentation group to map of objects.
@@ -363,6 +429,7 @@ public final class XcodeProjectWriter
      */
     private PBXObjectRef addProjectConfigurationList(final Map objects,
          final String baseDir,
+         final List dependencies,
          final CommandLineCompilerConfiguration compilerConfig,
          final CommandLineLinkerConfiguration linkerConfig) {
         //
@@ -448,16 +515,36 @@ public final class XcodeProjectWriter
             String[] linkerArgs = linkerConfig.getEndArguments();
             for (int i = 0; i < linkerArgs.length; i++) {
                  if (linkerArgs[i].startsWith("-L")) {
-                     String libName = linkerArgs[i].substring(2);
-                     if (!librarySearchMap.containsKey(libName)) {
-                         if (!libName.equals("/usr/lib")) {
-                            librarySearchPaths.add(libName);
+                     String libDir = linkerArgs[i].substring(2);
+                     if (!librarySearchMap.containsKey(libDir)) {
+                         if (!libDir.equals("/usr/lib")) {
+                            librarySearchPaths.add(
+                                    CUtil.toUnixPath(CUtil.getRelativePath(baseDir,
+                                            new File(libDir))));
                          }
-                         librarySearchMap.put(libName, libName);
+                         librarySearchMap.put(libDir, libDir);
 
                      }
                 } else if (linkerArgs[i].startsWith("-l")) {
-                     otherLdFlags.add(linkerArgs[i]);
+                     //
+                     //  check if library is in dependencies list
+                     //
+                     String libName = linkerArgs[i].substring(2);
+                     boolean found = false;
+                     for(Iterator iter = dependencies.iterator();iter.hasNext();) {
+                         DependencyDef dependency = (DependencyDef) iter.next();
+                         if (libName.startsWith(dependency.getName())) {
+                             File dependencyFile = dependency.getFile();
+                             if (dependencyFile != null &&
+                                     new File(dependencyFile.getAbsolutePath() + "xcodeproj").exists()) {
+                                found = true;
+                                break;
+                             }
+                         }
+                     }
+                     if (!found) {
+                        otherLdFlags.add(linkerArgs[i]);
+                     }
                 }
             }
 
@@ -483,7 +570,8 @@ public final class XcodeProjectWriter
                                       final TargetInfo linkTarget,
                                       final PBXObjectRef product,
                                       final String projectName,
-                                      final List sourceGroupChildren) {
+                                      final List sourceGroupChildren,
+                                      final List frameworkBuildFiles) {
 
         PBXObjectRef buildConfigurations =
                 addNativeTargetConfigurationList(objects, projectName);
@@ -509,7 +597,6 @@ public final class XcodeProjectWriter
         buildPhases.add(sourcesBuildPhase);
 
 
-        List frameworkBuildFiles = new ArrayList();
         buildActionMask = 8;
         PBXObjectRef frameworksBuildPhase =
                 createPBXFrameworksBuildPhase(buildActionMask,
@@ -768,6 +855,45 @@ public final class XcodeProjectWriter
         map.put("dstSubfolderSpec", dstSubfolderSpec);
         map.put("files", files);
         map.put("runOnlyForDeploymentPostprocessing", toString(runOnly));
+        return new PBXObjectRef(map);
+    }
+
+
+    /**
+     * Create a proxy for a file in a different project.
+     * @param containerPortal XcodeProject containing file.
+     * @param proxyType proxy type.
+     * @return PBXContainerItemProxy.
+     */
+    private static PBXObjectRef createPBXContainerItemProxy(
+            final PBXObjectRef containerPortal,
+            final int proxyType,
+            final String remoteInfo) {
+        Map map = new HashMap();
+        map.put("isa", "PBXContainerItemProxy");
+        map.put("containerPortal", containerPortal);
+        map.put("proxyType", NumberFormat.getIntegerInstance(Locale.US).format(proxyType));
+        map.put("remoteInfo", remoteInfo);
+        return new PBXObjectRef(map);
+    }
+    
+
+    /**
+     * Create a proxy for a file in a different project.
+     * @param remoteRef PBXContainerItemProxy for reference.
+     * @param dependency dependency.
+     * @return PBXContainerItemProxy.
+     */
+    private static PBXObjectRef createPBXReferenceProxy(
+            final PBXObjectRef remoteRef,
+            final DependencyDef dependency) {
+        Map map = new HashMap();
+        map.put("isa", "PBXReferenceProxy");
+        String fileType = "compiled.mach-o.dylib";
+        map.put("fileType", fileType);
+        map.put("remoteRef", remoteRef);
+        map.put("path", dependency.getFile().getName() + ".dylib");
+        map.put("sourceTree", "BUILT_PRODUCTS_DIR");
         return new PBXObjectRef(map);
     }
 
