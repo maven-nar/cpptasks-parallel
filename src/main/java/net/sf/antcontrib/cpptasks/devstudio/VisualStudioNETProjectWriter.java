@@ -26,8 +26,8 @@ import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.CommentDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.util.StringUtils;
 import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -90,18 +90,6 @@ public final class VisualStudioNETProjectWriter
         this.falseLiteral = falseArg;
     }
     
- /**
-  *  Determines if source file has a system path,
-  *    that is part of the compiler or platform.
-  *   @param source source, may not be null.
-  *   @return true is source file appears to be system library
-  *         and its path should be discarded.
-  */
-  private static boolean isSystemPath(final File source) {
-	  String lcPath = source.toString().toLowerCase(java.util.Locale.US);
-	  return lcPath.indexOf("platformsdk") != -1
-	      || lcPath.indexOf("microsoft") != -1;
-  }
 
     /**
      * Get configuration name.
@@ -131,6 +119,7 @@ public final class VisualStudioNETProjectWriter
         }
         return targtype;
     }
+
 
     /**
      * Get output directory.
@@ -238,18 +227,16 @@ public final class VisualStudioNETProjectWriter
      * @return value of AdditionalIncludeDirectories property.
      */
     private String getAdditionalIncludeDirectories(
-            final String basePath,
+            final String baseDir,
             final CommandLineCompilerConfiguration compilerConfig) {
+        File[] includePath = compilerConfig.getIncludePath();
         StringBuffer includeDirs = new StringBuffer();
-        String[] args = compilerConfig.getPreArguments();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("/I")) {
-                includeDirs.append(CUtil.toWindowsPath(
-                    CUtil.getRelativePath(basePath, 
-                        new File(args[i].substring(2)))));
-                includeDirs.append(';');
-            }
+        for (int i = 0; i < includePath.length; i++) {
+          String relPath = CUtil.getRelativePath(baseDir, includePath[i]);
+          includeDirs.append(CUtil.toWindowsPath(relPath));
+          includeDirs.append(';');
         }
+
 
         if (includeDirs.length() > 0) {
             includeDirs.setLength(includeDirs.length() - 1);
@@ -583,7 +570,7 @@ public final class VisualStudioNETProjectWriter
             //      otherwise construct a relative path.
             //
             String relPath = linkSources[i].getName();
-            if (!isSystemPath(linkSources[i])) {
+            if (!CUtil.isSystemPath(linkSources[i])) {
                 relPath = CUtil.getRelativePath(basePath, linkSources[i]);
             }
             //

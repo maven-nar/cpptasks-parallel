@@ -88,6 +88,12 @@ public final class XcodeProjectWriter
                     "Unable to find compilation target using GNU C++ compiler");
         }
 
+
+        CommandLineLinkerConfiguration linkerConfig = null;
+        if (linkTarget.getConfiguration() instanceof CommandLineLinkerConfiguration) {
+            linkerConfig = (CommandLineLinkerConfiguration) linkTarget.getConfiguration();
+        }
+
         String projectName = projectDef.getName();
         if (projectName == null) {
             projectName = fileName.getName();
@@ -118,6 +124,9 @@ public final class XcodeProjectWriter
                 createPBXGroup("Source", sourceTree, sourceGroupChildren);
         objects.put(sourceGroup.getID(), sourceGroup.getProperties());
 
+
+
+
         //
         //    add product to property list
         //
@@ -141,6 +150,13 @@ public final class XcodeProjectWriter
         groups.add(documentationGroup);
         groups.add(productsGroup);
         PBXObjectRef mainGroup = createPBXGroup(projectName, sourceTree, groups);
+        StringBuffer comments = new StringBuffer();
+        for(Iterator iter = projectDef.getComments().iterator(); iter.hasNext();) {
+            comments.append(iter.next());
+        }
+        if (comments.length() > 0) {
+            mainGroup.getProperties().put("comments", comments.toString());
+        }
         objects.put(mainGroup.getID(), mainGroup.getProperties());
 
         //
@@ -150,8 +166,7 @@ public final class XcodeProjectWriter
                 addProjectConfigurationList(objects,
                         basePath,
                         compilerConfig,
-                        (CommandLineLinkerConfiguration)
-                                linkTarget.getConfiguration());
+                        linkerConfig);
 
         String projectDirPath = "";
         List projectTargets = new ArrayList();
@@ -173,7 +188,8 @@ public final class XcodeProjectWriter
         //   Calculate path (typically several ../..) of the root directory
         //        (where build.xml lives) relative to the XCode project directory.
         //         XCode 3.0 will now prompt user to supply the value if not specified.
-        String projectRoot = CUtil.getRelativePath(basePath, projectDef.getProject().getBaseDir());
+        String projectRoot = CUtil.toUnixPath(
+                CUtil.getRelativePath(basePath, projectDef.getProject().getBaseDir()));
         PBXObjectRef project = createPBXProject(compilerConfigurations, mainGroup,
                 projectDirPath, projectRoot, projectTargets);
         objects.put(project.getID(), project.getProperties());
@@ -190,7 +206,8 @@ public final class XcodeProjectWriter
         //    write property list out to XML file
         //
         try {
-            PropertyListSerialization.serialize(propertyList, xcodeProj);
+            PropertyListSerialization.serialize(propertyList,
+                    projectDef.getComments(), xcodeProj);
         } catch (TransformerConfigurationException ex) {
             throw new IOException(ex.toString());
         } catch (SAXException ex) {
@@ -296,6 +313,7 @@ public final class XcodeProjectWriter
      */
     private PBXObjectRef addNativeTargetConfigurationList(final Map objects,
                                                        final String projectName) {
+
         //
         //   Create a configuration list with
         //     two stock configurations: Debug and Release
@@ -334,12 +352,13 @@ public final class XcodeProjectWriter
         return configurationList;
     }
 
+
+
     /**
      * Add project configuration list.
      * @param objects map of objects.
      * @param baseDir base directory.
      * @param compilerConfig compiler configuration.
-     * @param linkerConfig linker configuration.
      * @return project configuration object.
      */
     private PBXObjectRef addProjectConfigurationList(final Map objects,
@@ -356,6 +375,8 @@ public final class XcodeProjectWriter
         debugSettings.put("GCC_WARN_UNUSED_VARIABLE", "YES");
         debugSettings.put("PREBINDING", "NO");
         debugSettings.put("SDKROOT", "/Developer/SDKs/MacOSX10.4u.sdk");
+
+
         PBXObjectRef debugConfig = createXCBuildConfiguration("Debug", debugSettings);
         objects.put(debugConfig.getID(), debugConfig.getProperties());
         configurations.add(debugConfig);
@@ -381,12 +402,20 @@ public final class XcodeProjectWriter
         File[] includeDirs = compilerConfig.getIncludePath();
         if (includeDirs.length > 0) {
             ArrayList includePaths = new ArrayList();
+            Map includePathMap = new HashMap();
             for (int i = 0; i < includeDirs.length; i++) {
-                String relPath = CUtil.getRelativePath(baseDir, includeDirs[i]);
-                if (relPath.startsWith("..")) {
-                    includePaths.add(includeDirs[i].getPath());
-                } else {
-                    includePaths.add(relPath);
+                if(!CUtil.isSystemPath(includeDirs[i])) {
+                    String absPath = includeDirs[i].getAbsolutePath();
+                    if (!includePathMap.containsKey(absPath)) {
+                        if(absPath.startsWith("/usr/")) {
+                            includePaths.add(CUtil.toUnixPath(absPath));
+                        } else {
+                            String relPath = CUtil.toUnixPath(
+                                CUtil.getRelativePath(baseDir, includeDirs[i]));
+                            includePaths.add(relPath);
+                        }
+                        includePathMap.put(absPath, absPath);
+                    }
                 }
             }
             includePaths.add("${inherited)");
@@ -411,26 +440,33 @@ public final class XcodeProjectWriter
             releaseSettings.put("GCC_PREPROCESSOR_DEFINITIONS", defines);
         }
 
-        String[] linkerArgs = linkerConfig.getPreArguments();
-        List librarySearchPaths = new ArrayList();
-        List libNames = new ArrayList();
-        for (int i = 0; i < linkerArgs.length; i++) {
-            if (linkerArgs[i].startsWith("-L")) {
-                 librarySearchPaths.add(linkerArgs[i].substring(2));
-            } else if (linkerArgs[i].startsWith("-l")) {
-                 libNames.add(linkerArgs[i]);
+
+        if (linkerConfig != null) {
+            Map librarySearchMap = new HashMap();
+            List librarySearchPaths = new ArrayList();
+            List otherLdFlags = new ArrayList();
+            String[] linkerArgs = linkerConfig.getEndArguments();
+            for (int i = 0; i < linkerArgs.length; i++) {
+                 if (linkerArgs[i].startsWith("-L")) {
+                     String libName = linkerArgs[i].substring(2);
+                     if (!librarySearchMap.containsKey(libName)) {
+                         if (!libName.equals("/usr/lib")) {
+                            librarySearchPaths.add(libName);
+                         }
+                         librarySearchMap.put(libName, libName);
+
+                     }
+                } else if (linkerArgs[i].startsWith("-l")) {
+                     otherLdFlags.add(linkerArgs[i]);
+                }
             }
-        }
-        if (librarySearchPaths.size() > 0) {
-            librarySearchPaths.add("\"$(inherited)\"");
+
+
             debugSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
+            debugSettings.put("OTHER_LDFLAGS", otherLdFlags);
             releaseSettings.put("LIBRARY_SEARCH_PATHS", librarySearchPaths);
-        }
-        if (libNames.size() > 0) {
-            libNames.add("$(inherited)");
-            debugSettings.put("OTHER_LDFLAGS", libNames);
-            releaseSettings.put("OTHER_LDFLAGS", libNames);
-        }
+            releaseSettings.put("OTHER_LDFLAGS", otherLdFlags);
+        }        
         return configurationList;
     }
 
@@ -473,9 +509,11 @@ public final class XcodeProjectWriter
         buildPhases.add(sourcesBuildPhase);
 
 
+        List frameworkBuildFiles = new ArrayList();
+        buildActionMask = 8;
         PBXObjectRef frameworksBuildPhase =
                 createPBXFrameworksBuildPhase(buildActionMask,
-                new ArrayList(), false);
+                frameworkBuildFiles, false);
         objects.put(frameworksBuildPhase.getID(), frameworksBuildPhase.getProperties());
         buildPhases.add(frameworksBuildPhase);
 
@@ -539,8 +577,9 @@ public final class XcodeProjectWriter
         Map map = new HashMap();
         map.put("isa", "PBXFileReference");
 
-        String relPath = CUtil.getRelativePath(baseDir, file);
+        String relPath = CUtil.toUnixPath(CUtil.getRelativePath(baseDir, file));
         map.put("path", relPath);
+        map.put("name", file.getName());
         map.put("sourceTree", sourceTree);
         return new PBXObjectRef(map);
     }

@@ -493,7 +493,31 @@ public class CUtil {
           return StringUtils.replace(path, File.separator, "\\");
       }
       return path;
-  }
+    }
     
+    public static String toUnixPath(final String path) {
+      if (File.separatorChar != '/' && path.indexOf(File.separatorChar) != -1) {
+          return StringUtils.replace(path, File.separator, "/");
+      }
+      return path;
+    }
+
+    /**
+     *  Determines if source file has a system path,
+     *    that is part of the compiler or platform.
+     *   @param source source, may not be null.
+     *   @return true is source file appears to be system library
+     *         and its path should be discarded.
+     */
+     public static boolean isSystemPath(final File source) {
+         String lcPath = source.getAbsolutePath().toLowerCase(java.util.Locale.US);
+         return lcPath.indexOf("platformsdk") != -1
+             || lcPath.indexOf("microsoft") != -1 ||
+                lcPath == "/usr/include" ||
+                lcPath == "/usr/lib" ||
+                lcPath == "/usr/local/include" ||
+                lcPath == "/usr/local/lib";
+     }
+
 
 }

@@ -27,7 +27,6 @@ import net.sf.antcontrib.cpptasks.ide.ProjectDef;
 import net.sf.antcontrib.cpptasks.ide.ProjectWriter;
 import net.sf.antcontrib.cpptasks.ide.CommentDef;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.util.StringUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,7 +39,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Writes a Microsoft Visual Studio 97 or Visual Studio 6 project file.
@@ -557,18 +555,6 @@ public final class DevStudioProjectWriter
 
 
 
- /**
-  *  Determines if source file has a system path,
-  *    that is part of the compiler or platform.
-  *   @param source source, may not be null.
-  *   @return true is source file appears to be system library
-  *         and its path should be discarded.
-  */
-  private static boolean isSystemPath(final File source) {
-	  String lcPath = source.toString().toLowerCase(java.util.Locale.US);
-	  return lcPath.indexOf("platformsdk") != -1
-	      || lcPath.indexOf("microsoft") != -1;
-  }
 
   /**
    * Writes link options.
@@ -605,7 +591,7 @@ public final class DevStudioProjectWriter
           //      otherwise construct a relative path.
           //
           String relPath = linkSources[i].getName();
-          if (!isSystemPath(linkSources[i])) {
+          if (!CUtil.isSystemPath(linkSources[i])) {
               relPath = CUtil.getRelativePath(basePath, linkSources[i]);
           }
           //

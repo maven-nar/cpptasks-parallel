@@ -27,7 +27,7 @@ import net.sf.antcontrib.cpptasks.VersionInfo;
  * @author CurtA
  */
 public class TestTargetHistoryTable extends TestXMLConsumer {
-    private static class MockProcessorConfiguration
+    public static class MockProcessorConfiguration
             implements
                 ProcessorConfiguration {
         public MockProcessorConfiguration() {

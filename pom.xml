@@ -68,11 +68,13 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.1</version>
         <configuration>
           <reportFormat>plain</reportFormat>
           <excludes>
               <exclude>**/TestInstalledDevStudioLinker.java</exclude>
-              <exclude>**/TestMetaObjectCompiler.java</exclude> 
+              <exclude>**/TestMetaObjectCompiler.java</exclude>
+              <exclude>**/TestAbstract*.java</exclude> 
           </excludes>
         </configuration>
       </plugin>

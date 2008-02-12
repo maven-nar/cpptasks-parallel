@@ -50,10 +50,12 @@ public final class PropertyListSerialization {
      * Serializes a property list into a Cocoa XML Property List document.
      * @param propertyList property list.
      * @param file destination.
+     * @param comments comments to insert into document.
      * @throws SAXException if exception during serialization.
      * @throws TransformerConfigurationException if exception creating serializer.
      */
     public static void serialize(final Map propertyList,
+                                 final List comments,
                                  final File file)
            throws IOException, SAXException,
                TransformerConfigurationException {
@@ -66,6 +68,10 @@ public final class PropertyListSerialization {
         handler.setResult(result);
 
         handler.startDocument();
+        for(Iterator iter = comments.iterator(); iter.hasNext();) {
+            char[] comment = String.valueOf(iter.next()).toCharArray();
+            handler.comment(comment, 0, comment.length);
+        }
         AttributesImpl attributes = new AttributesImpl();
         handler.startElement(null, "plist", "plist", attributes);
         serializeMap(propertyList, handler);

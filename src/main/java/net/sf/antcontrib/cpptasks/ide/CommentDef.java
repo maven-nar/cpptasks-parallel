@@ -40,4 +40,8 @@ public final class CommentDef {
 	public void addText(final String newText) {
 		text += newText;
 	}
+
+    public String toString() {
+        return text;
+    }
 }
