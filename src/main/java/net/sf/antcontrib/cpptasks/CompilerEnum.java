@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2002-2004 The Ant-Contrib project
+ * Copyright 2002-2008 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import net.sf.antcontrib.cpptasks.devstudio.DevStudio2005CCompiler;
 import net.sf.antcontrib.cpptasks.devstudio.DevStudioMIDLCompiler;
 import net.sf.antcontrib.cpptasks.devstudio.DevStudioResourceCompiler;
 import net.sf.antcontrib.cpptasks.gcc.GccCCompiler;
+import net.sf.antcontrib.cpptasks.gcc.WindresResourceCompiler;
 import net.sf.antcontrib.cpptasks.hp.aCCCompiler;
 import net.sf.antcontrib.cpptasks.ibm.VisualAgeCCompiler;
 import net.sf.antcontrib.cpptasks.intel.IntelLinux32CCompiler;
@@ -175,6 +176,10 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
  * <td>wfl</td>
  * <td>OpenWatcom FORTRAN compiler (experimental)</td>
  * </tr>
+ * <tr>
+ * <td>windres</td>
+ * <td>GNU windres resource compiler</td>
+ * </tr>
  * </table>
  * 
  * @author Curt Arnold
@@ -246,7 +251,8 @@ public class CompilerEnum extends EnumeratedAttribute {
 			new ProcessorEnumValue("xpidl", XpidlCompiler.getInstance()),
 			new ProcessorEnumValue("wcl", OpenWatcomCCompiler.getInstance()),
 			new ProcessorEnumValue("wfl", OpenWatcomFortranCompiler.getInstance()),
-							};
+            new ProcessorEnumValue("windres", WindresResourceCompiler.getInstance())
+                            };
     public Compiler getCompiler() {
         return (Compiler) compilers[getIndex()].getProcessor();
     }
