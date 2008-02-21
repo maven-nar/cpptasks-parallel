@@ -39,8 +39,8 @@ public final class WindresResourceCompiler extends CommandLineCompiler {
         return instance;
     }
     private WindresResourceCompiler(boolean newEnvironment, Environment env) {
-        super("rc", null, new String[]{".rc"}, new String[]{".h", ".hpp",
-                ".inl"}, ".res", false, null, newEnvironment, env);
+        super("windres", null, new String[]{".rc"}, new String[]{".h", ".hpp",
+                ".inl"}, ".o", false, null, newEnvironment, env);
     }
     protected void addImpliedArgs(final Vector args, 
     		final boolean debug,
@@ -92,9 +92,7 @@ public final class WindresResourceCompiler extends CommandLineCompiler {
             int index) {
         if (index == 0) {
             String outputFileName = getOutputFileNames(filename, null)[0];
-            String fullOutputName = new File(outputDir, outputFileName)
-                    .toString();
-            return "-o" + fullOutputName;
+            return "-o" + outputFileName;
         }
         return filename;
     }
