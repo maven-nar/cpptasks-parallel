@@ -536,7 +536,7 @@ public final class XcodeProjectWriter
                          if (libName.startsWith(dependency.getName())) {
                              File dependencyFile = dependency.getFile();
                              if (dependencyFile != null &&
-                                     new File(dependencyFile.getAbsolutePath() + "xcodeproj").exists()) {
+                                     new File(dependencyFile.getAbsolutePath() + ".xcodeproj").exists()) {
                                 found = true;
                                 break;
                              }
