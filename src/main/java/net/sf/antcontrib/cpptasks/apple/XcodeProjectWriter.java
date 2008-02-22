@@ -317,12 +317,7 @@ public final class XcodeProjectWriter
                 linkTarget.getOutput());
         Map executableProperties = executable.getProperties();
 
-        String fileType = "compiled.mach-o.executable";
-        if (isStaticLibrary(linkTarget)) {
-            fileType = "archive.ar";
-        } else if (isDylibLibrary(linkTarget)) {
-            fileType = "compiled.mach-o.dylib";
-        }
+        String fileType = getFileType(linkTarget);
         executableProperties.put("explicitFileType", fileType);
         executableProperties.put("includeInIndex", "0");
         objects.put(executable.getID(), executableProperties);
@@ -615,12 +610,7 @@ public final class XcodeProjectWriter
 
         String productInstallPath = "$(HOME)/bin";
 
-        String productType = "com.apple.product-type.tool";
-        if (isStaticLibrary(linkTarget)) {
-            productType = "com.apple.product-type.library.static";
-        } else if (isDylibLibrary(linkTarget)) {
-            productType = "com.apple.product-type.library.dynamic";            
-        }
+        String productType = getProductType(linkTarget);
 
         PBXObjectRef nativeTarget = createPBXNativeTarget(projectName,
                 buildConfigurations, buildPhases, buildRules, dependencies,
@@ -630,26 +620,45 @@ public final class XcodeProjectWriter
         return nativeTarget;
     }
 
-    /**
-     * Determines if linked target is a static library.
-     * @param linkTarget link target
-     * @return true if a static library
-     */
-    private static boolean isStaticLibrary(final TargetInfo linkTarget) {
+    private int getProductTypeIndex(final TargetInfo linkTarget) {
         String outPath = linkTarget.getOutput().getPath();
-        return (outPath.lastIndexOf(".a") == outPath.length() - 2);
+        String outExtension = null;
+        int lastDot = outPath.lastIndexOf('.');
+        if (lastDot != -1) {
+            outExtension = outPath.substring(lastDot);
+        }
+        if (".a".equalsIgnoreCase(outExtension) || ".lib".equalsIgnoreCase(outExtension)) {
+            return 1;
+        } else if (".dylib".equalsIgnoreCase(outExtension) ||
+                   ".so".equalsIgnoreCase(outExtension) ||
+                   ".dll".equalsIgnoreCase(outExtension)) {
+            return 2;
+        }
+        return 0;
     }
 
-    /**
-     * Determines if linked target is a static library.
-     * @param linkTarget link target
-     * @return true if a static library
-     */
-    private static boolean isDylibLibrary(final TargetInfo linkTarget) {
-        String outPath = linkTarget.getOutput().getPath();
-        return (outPath.lastIndexOf(".dylib") == outPath.length() - 6 &&
-            outPath.length() > 6);
+    private String getProductType(final TargetInfo linkTarget) {
+        switch(getProductTypeIndex(linkTarget)) {
+            case 1:
+                return "com.apple.product-type.library.static";
+            case 2:
+                return "com.apple.product-type.library.dynamic";
+            default:
+                return "com.apple.product-type.tool";
+        }
     }
+
+    private String getFileType(final TargetInfo linkTarget) {
+        switch(getProductTypeIndex(linkTarget)) {
+            case 1:
+                return "archive.ar";
+            case 2:
+                return "compiled.mach-o.dylib";
+            default:
+                return "compiled.mach-o.executable";
+        }
+    }
+
 
     /**
      * Create PBXFileReference.
