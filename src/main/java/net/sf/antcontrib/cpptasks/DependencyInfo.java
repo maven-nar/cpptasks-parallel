@@ -57,7 +57,7 @@ public final class DependencyInfo {
      * Returns the latest modification date of the source or anything that it
      * depends on.
      * 
-     * @returns the composite lastModified time, returns Long.MIN_VALUE if not
+     * @return the composite lastModified time, returns Long.MIN_VALUE if not
      * set
      */
     public long getCompositeLastModified() {

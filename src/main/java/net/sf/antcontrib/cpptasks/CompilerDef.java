@@ -354,7 +354,7 @@ public final class CompilerDef extends ProcessorDef {
      * Enables or disables generation of multithreaded code. Unless specified,
      * multithreaded code generation is enabled.
      * 
-     * @param multi
+     * @param multithreaded
      *            If true, generated code may be multithreaded.
      */
     public void setMultithreaded(boolean multithreaded) {

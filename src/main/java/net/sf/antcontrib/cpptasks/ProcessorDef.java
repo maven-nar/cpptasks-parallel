@@ -126,7 +126,7 @@ public abstract class ProcessorDef extends DataType {
     /**
      * Adds a <compilerarg>or <linkerarg>
      * 
-     * @param arg
+     * @param param
      *            command line argument, must not be null
      * @throws NullPointerException
      *             if arg is null

@@ -292,7 +292,7 @@ public class LinkerDef extends ProcessorDef {
     /**
      * Sets the starting address.
      * 
-     * @param name
+     * @param entry
      *            function name
      */
     public void setEntry(String entry) {

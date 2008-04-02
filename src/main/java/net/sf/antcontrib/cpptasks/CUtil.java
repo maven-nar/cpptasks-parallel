@@ -34,6 +34,7 @@ import org.apache.tools.ant.util.StringUtils;
  * Some utilities used by the CC and Link tasks.
  *
  * @author Adam Murdoch
+ * @author Curt Arnold
  */
 public class CUtil {
     /**
@@ -180,7 +181,6 @@ public class CUtil {
      * @return relative path of target file. Returns targetFile if there were
      *         no commonalities between the base and the target
      *
-     * @author Curt Arnold
      */
     public static String getRelativePath(final String base, final File targetFile) {
         try {

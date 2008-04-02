@@ -285,9 +285,10 @@ public abstract class CommandLineLinker extends AbstractLinker
      * Prepares argument list for exec command.  Will return null
      * if command line would exceed allowable command line buffer.
      *
+     * @param task compilation task.
      * @param outputFile linker output file
      * @param sourceFiles linker input files (.obj, .o, .res)
-     * @param args linker arguments
+     * @param config linker configuration
      * @return arguments for runTask
      */
     protected String[] prepareArguments(

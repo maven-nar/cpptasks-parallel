@@ -73,9 +73,7 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
      * include switches to that vector (for use in building a configuration
      * identifier that is consistent between machines).
      * 
-     * @param baseDirPaths
-     *            A vector containing the parts of the working directory,
-     *            produced by CUtil.DecomposeFile.
+     * @param baseDirPath Base directory path.
      * @param includeDirs
      *            Array of include directory paths
      * @param args
@@ -131,7 +129,6 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
     /**
      * Compiles a source file.
      * 
-     * @author Curt Arnold
      */
     public void compile(CCTask task, File outputDir, String[] sourceFiles,
             String[] args, String[] endArgs, boolean relentless,

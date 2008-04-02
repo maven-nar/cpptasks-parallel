@@ -272,8 +272,8 @@ public abstract class AbstractLdLinker extends CommandLineLinker {
      *            linker output file
      * @param sourceFiles
      *            linker input files (.obj, .o, .res)
-     * @param args
-     *            linker arguments
+     * @param config
+     *            linker configuration
      * @return arguments for runTask
      */
     public String[] prepareArguments(CCTask task, String outputDir,

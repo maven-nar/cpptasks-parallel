@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2001-2005 The Ant-Contrib project
+ * Copyright 2001-2008 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import org.apache.tools.ant.types.Environment;
  * </p>
  * 
  * <p>
- * Copyright (c) 2001-2007, The Ant-Contrib project.
+ * Copyright (c) 2001-2008, The Ant-Contrib project.
  * </p>
  * 
  * <p>
@@ -379,7 +379,7 @@ public class CCTask extends Task {
      * Checks all targets that are not forced to be rebuilt or are missing
      * object files to be checked for modified include files
      * 
-     * @returns total number of targets to be rebuilt
+     * @return total number of targets to be rebuilt
      *  
      */
     protected int checkForChangedIncludeFiles(Hashtable targets) {
@@ -1302,7 +1302,7 @@ public class CCTask extends Task {
     /**
      * If set to true, all files will be rebuilt.
      * 
-     * @paran rebuildAll If true, all files will be rebuilt. If false, up to
+     * @param rebuildAll If true, all files will be rebuilt. If false, up to
      * date files will not be rebuilt.
      */
     public void setRebuild(boolean rebuildAll) {
