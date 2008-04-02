@@ -22,7 +22,7 @@ cpptasks for Apache Ant
 
   The cc task can compile various source languages and produce executables,
   shared libraries (aka DLL's) and static libraries. Compiler adaptors are currently available
-  for several C/C++ compilers, FORTRAN, MIDL and Windows Resource files.
+  for C/C++, FORTRAN, MIDL and Windows Resource compilers.
 
   The task can be used with Apache Ant 1.5 and later.  This software is not a product
   of the Apache Software Foundation (ASF) and no endorsement by the ASF is implied.
@@ -32,9 +32,7 @@ cpptasks for Apache Ant
      * Place cpptasks.jar into Ant's classpath by placing in Ant's lib directory,
           adding to CLASSPATH environment variable or using the -lib command line option.
 
-     * Add type and task definitions in build file:
-       Ant 1.6 or later: add xmlns:cpptasks="antlib:sf.net.antcontrib.cpptasks" to <project> element.
-       Ant 1.5 or later: Add <taskdef resource="cpptasks.tasks"/> and <typedef resource="cpptasks.types"/> to body of <project> element.
+     * Add type and task definitions in build file using either taskdef or antlib.
 
      * Add {{{antdocs/CCTask.html}cc}} element to some target in your build file.
 
@@ -42,7 +40,7 @@ cpptasks for Apache Ant
 
      * Build project.
 
-   Trivial Sample:
+   Trivial Sample using taskdef (compatible with Ant 1.5 or later):
    
 +--
 <project name="hello" default="compile">
@@ -52,6 +50,19 @@ cpptasks for Apache Ant
         <cc outtype="executable" subsystem="console" outfile="target/hello" objdir="target/main/obj">
            <fileset dir="src/main/c" includes="*.c"/>
         </cc>
+    </target>
+</project>
++--
+
+   Trivial Sample using antlib (compatible with Ant 1.6 or later):
+   
++--
+<project name="hello" default="compile" xmlns:cpptasks="antlib:net.sf.antcontrib.cpptasks">
+    <target name="compile">
+        <mkdir dir="target/main/obj"/>
+        <cpptasks:cc outtype="executable" subsystem="console" outfile="target/hello" objdir="target/main/obj">
+           <fileset dir="src/main/c" includes="*.c"/>
+        </cpptasks:cc>
     </target>
 </project>
 +--
