@@ -1,27 +1,10 @@
-<!--
- Licensed to the Ant-Contrib Project under one or more
- contributor license agreements.  See the NOTICE file distributed with
- this work for additional information regarding copyright ownership.
- The Ant-Contrib Project licenses this file to You under the Apache License, Version 2.0
- (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ant-contrib</groupId>
   <artifactId>cpptasks</artifactId>
   <packaging>jar</packaging>
   <name>cpptasks</name>
-  <version>1.0b5-SNAPSHOT</version>
+  <version>1.0b5</version>
   <description>Compile tasks for Apache Ant</description>
   <url>http://ant-contrib.sourceforge.net:80/cpptasks</url>
   <issueManagement>
@@ -60,9 +43,9 @@
     </license>
   </licenses>
   <scm>
-       <connection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/trunk</connection>
-       <developerConnection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/trunk</developerConnection>
-    <url>http://ant-contrib.svn.sourceforge.net/viewvc/ant-contrib/cpptasks/trunk/</url>
+       <connection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/tags/cpptasks-1.0b5</connection>
+       <developerConnection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/tags/cpptasks-1.0b5</developerConnection>
+    <url>http://ant-contrib.svn.sourceforge.net/viewvc/ant-contrib/cpptasks/tags/cpptasks-1.0b5</url>
   </scm>
   <build>
     <plugins>
@@ -112,14 +95,11 @@
             <id>pre-site</id>
             <configuration>
                 <tasks>
-                    <mkdir dir="target/taskdocs-classes"/>
-                    <javac srcdir="src/taskdocs/java" destdir="target/taskdocs-classes" debug="true"/>
-                    <mkdir dir="src/site/xdoc/antdocs"/>
-                    <javadoc sourcepath="src/main/java"
-                        doclet="net.sf.antcontrib.taskdocs.TaskDoclet"
-                        docletPath="target/taskdocs-classes"
-                        classpath="${user.home}/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar">
-                        <fileset dir="src/main/java" includes="**/*.java"/>
+                    <mkdir dir="target/taskdocs-classes" />
+                    <javac srcdir="src/taskdocs/java" destdir="target/taskdocs-classes" debug="true" />
+                    <mkdir dir="src/site/xdoc/antdocs" />
+                    <javadoc sourcepath="src/main/java" doclet="net.sf.antcontrib.taskdocs.TaskDoclet" docletPath="target/taskdocs-classes" classpath="${user.home}/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar">
+                        <fileset dir="src/main/java" includes="**/*.java" />
                      </javadoc>
                 </tasks>
             </configuration>
