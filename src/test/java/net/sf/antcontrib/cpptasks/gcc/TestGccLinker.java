@@ -27,8 +27,7 @@ public class TestGccLinker extends TestCase {
     /**
      * Constructor
      * 
-     * @param test
-     *            name
+     * @param name test name
      */
     public TestGccLinker(String name) {
         super(name);

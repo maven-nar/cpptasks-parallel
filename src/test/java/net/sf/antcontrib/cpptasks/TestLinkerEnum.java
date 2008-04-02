@@ -24,8 +24,7 @@ import junit.framework.TestCase;
  */
 public class TestLinkerEnum extends TestCase {
     /**
-     * @param test
-     *            case name
+     * @param name test case name
      */
     public TestLinkerEnum(String name) {
         super(name);

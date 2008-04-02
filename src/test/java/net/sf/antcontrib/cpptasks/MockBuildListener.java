@@ -69,7 +69,7 @@ public class MockBuildListener implements BuildListener {
     /**
      * Gets message logged events
      * 
-     * @return
+     * @return vector of "MessageLogged" events.
      */
     public Vector getMessageLoggedEvents() {
         return new Vector(messageLoggedEvents);
@@ -77,7 +77,7 @@ public class MockBuildListener implements BuildListener {
     /**
      * Gets target finished events
      * 
-     * @return
+     * @return vector of "TargetFinished" events.
      */
     public Vector getTargetFinishedEvents() {
         return new Vector(targetFinishedEvents);
@@ -85,7 +85,7 @@ public class MockBuildListener implements BuildListener {
     /**
      * Gets target started events
      * 
-     * @return
+     * @return vector of "TargetStarted" events.
      */
     public Vector getTargetStartedEvents() {
         return new Vector(targetStartedEvents);
@@ -93,7 +93,7 @@ public class MockBuildListener implements BuildListener {
     /**
      * Gets task finished events
      * 
-     * @return
+     * @return vector of "TaskFinished" events.
      */
     public Vector getTaskFinishedEvents() {
         return new Vector(taskFinishedEvents);
@@ -101,7 +101,7 @@ public class MockBuildListener implements BuildListener {
     /**
      * Gets task started events
      * 
-     * @return
+     * @return vector of "TaskStarted" events.
      */
     public Vector getTaskStartedEvents() {
         return new Vector(taskStartedEvents);

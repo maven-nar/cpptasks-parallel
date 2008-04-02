@@ -30,11 +30,11 @@ import junit.framework.TestCase;
  */
 public abstract class TestXMLConsumer extends TestCase {
     /**
-     * Loads a TargetHistoryTable from a resource
+     * copies a resource to a temporary directory.
      * 
      * @param resourceName
      *            resouce name, such as "files/openshore/history.xml".
-     * @return TargetHistoryTable
+     * @param tmpFile name for temporary file created in /tmp or similar.
      */
     public static final void copyResourceToTmpDir(String resourceName,
             String tmpFile) throws IOException {
