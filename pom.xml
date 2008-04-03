@@ -246,11 +246,11 @@
  <distributionManagement>
     <repository>
       <id>ant-contrib.repo</id>
-      <url>scp://shell.sourceforge.net/home/groups/a/an/ant-contrib/htdocs/m2-repo</url>
+      <url>file:///${user.dir}/target/m2-repo</url>
     </repository>
     <site>
       <id>cpptasks.site</id>
-      <url>scp://shell.sourceforge.net/home/groups/a/an/ant-contrib/htdocs/cpptasks</url>
+      <url>file:///${user.dir}/target/site-deploy</url>
     </site>
   </distributionManagement> 
 </project>
