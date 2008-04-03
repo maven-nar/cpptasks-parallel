@@ -4,7 +4,7 @@
   <artifactId>cpptasks</artifactId>
   <packaging>jar</packaging>
   <name>cpptasks</name>
-  <version>1.0b5</version>
+  <version>1.0b6-SNAPSHOT</version>
   <description>Compile tasks for Apache Ant</description>
   <url>http://ant-contrib.sourceforge.net:80/cpptasks</url>
   <issueManagement>
