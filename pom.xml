@@ -43,9 +43,9 @@
     </license>
   </licenses>
   <scm>
-       <connection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/tags/cpptasks-1.0b5</connection>
-       <developerConnection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/tags/cpptasks-1.0b5</developerConnection>
-    <url>http://ant-contrib.svn.sourceforge.net/viewvc/ant-contrib/cpptasks/tags/cpptasks-1.0b5</url>
+       <connection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/trunk</connection>
+       <developerConnection>scm:svn:https://ant-contrib.svn.sourceforge.net/svnroot/ant-contrib/cpptasks/trunk</developerConnection>
+    <url>http://ant-contrib.svn.sourceforge.net/viewvc/ant-contrib/cpptasks/trunk</url>
   </scm>
   <build>
     <plugins>
