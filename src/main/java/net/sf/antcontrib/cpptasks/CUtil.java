@@ -367,7 +367,7 @@ public class CUtil {
         }
     }
     /**
-     * Compares the contents of 2 arrays for equaliy.
+     * Compares the contents of 2 arrays for equality.
      */
     public static boolean sameList(Object[] a, Object[] b) {
         if (a == null || b == null || a.length != b.length) {

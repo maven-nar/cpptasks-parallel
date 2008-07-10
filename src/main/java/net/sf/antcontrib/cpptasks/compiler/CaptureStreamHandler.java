@@ -15,15 +15,14 @@
  *  limitations under the License.
  */
 package net.sf.antcontrib.cpptasks.compiler;
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Vector;
 
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteStreamHandler;
+
 /**
  * Implements ExecuteStreamHandler to capture the output of a Execute to an
  * array of strings
@@ -43,52 +42,41 @@ public class CaptureStreamHandler implements ExecuteStreamHandler {
         Execute exec = new Execute(handler);
         exec.setCommandline(cmdline);
         try {
-            int status = exec.execute();
+            exec.execute();
         } catch (IOException ex) {
         }
         return handler.getOutput();
     }
+
     private InputStream errorStream;
     private InputStream fromProcess;
+    private String[] output;
+    private LineReader outputReader;
+    private LineReader errorReader;
+    private Thread outputReaderThread;
+    private Thread errorReaderThread;
+
     public CaptureStreamHandler() {
     }
+
     public String[] getOutput() {
-        String[] output;
-        if (fromProcess != null) {
-            Vector lines = new Vector(10);
-            try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(errorStream));
-                for (int i = 0; i < 2; i++) {
-                    for (int j = 0; j < 100; j++) {
-                        String line = reader.readLine();
-                        if (line == null) {
-                            reader = new BufferedReader(new InputStreamReader(
-                                    fromProcess));
-                            break;
-                        }
-                        lines.addElement(line);
-                    }
-                }
-            } catch (IOException ex) {
-            }
-            output = new String[lines.size()];
-            lines.copyInto(output);
-            return output;
+        if (this.output != null) {
+            return this.output;
+        } else {
+            return new String[0];
         }
-        output = new String[0];
-        return output;
     }
+
     /**
      * Install a handler for the error stream of the subprocess.
      * 
      * @param is
-     *            input stream to read from the error stream from the
-     *            subprocess
+     *            input stream to read from the error stream from the subprocess
      */
     public void setProcessErrorStream(InputStream is) throws IOException {
         errorStream = is;
     }
+
     /**
      * Install a handler for the input stream of the subprocess.
      * 
@@ -99,24 +87,66 @@ public class CaptureStreamHandler implements ExecuteStreamHandler {
     public void setProcessInputStream(OutputStream os) throws IOException {
         os.close();
     }
+
     /**
      * Install a handler for the output stream of the subprocess.
      * 
      * @param is
-     *            input stream to read from the error stream from the
-     *            subprocess
+     *            input stream to read from the error stream from the subprocess
      */
     public void setProcessOutputStream(InputStream is) throws IOException {
         fromProcess = is;
     }
+
     /**
      * Start handling of the streams.
      */
     public void start() throws IOException {
+        this.outputReader = new LineReader(this.fromProcess);
+        this.errorReader = new LineReader(this.errorStream);
+        this.outputReaderThread = new Thread(this.outputReader);
+        this.errorReaderThread = new Thread(this.errorReader);
+
+        outputReaderThread.start();
+        errorReaderThread.start();
     }
+
     /**
      * Stop handling of the streams - will not be restarted.
      */
     public void stop() {
+        try {
+            if (this.outputReaderThread != null) {
+                this.outputReaderThread.join();
+            }
+            if (this.errorReaderThread != null) {
+                this.errorReaderThread.join();
+            }
+        } catch (InterruptedException e) {
+        }
+
+        String[] outputLines = null;
+        String[] errorLines = null;
+
+        if (this.outputReader != null) {
+            outputLines = this.outputReader.getLines();
+        } else {
+            outputLines = new String[0];
+        }
+
+        if (this.errorReader != null) {
+            errorLines = this.errorReader.getLines();
+        } else {
+            errorLines = new String[0];
+        }
+
+        this.output = new String[outputLines.length + errorLines.length];
+        int pos = 0;
+        for (int i = 0; i < errorLines.length; i++) {
+            this.output[pos++] = errorLines[i];
+        }
+        for (int i = 0; i < outputLines.length; i++) {
+            this.output[pos++] = outputLines[i];
+        }
     }
 }
