@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Copyright 2001-2004 The Ant-Contrib project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ import net.sf.antcontrib.cpptasks.OptimizationEnum;
 
 /**
  * Adapter for the GCC C/C++ compiler
- * 
+ *
  * @author Adam Murdoch
  */
 public final class GccCCompiler extends GccCompatibleCCompiler {
@@ -106,14 +106,14 @@ public final class GccCCompiler extends GccCompatibleCCompiler {
                 libtoolCompiler, newEnvironment, env);
         isPICMeaningful = System.getProperty("os.name").indexOf("Windows") < 0;
     }
-    public void addImpliedArgs(final Vector args, 
+    public void addImpliedArgs(final Vector args,
     		final boolean debug,
-            final boolean multithreaded, 
-			final boolean exceptions, 
+            final boolean multithreaded,
+			final boolean exceptions,
 			final LinkType linkType,
 			final Boolean rtti,
 			final OptimizationEnum optimization) {
-        super.addImpliedArgs(args, debug, multithreaded, 
+        super.addImpliedArgs(args, debug, multithreaded,
         		exceptions, linkType, rtti, optimization);
         if (isPICMeaningful && linkType.isSharedLibrary()) {
             args.addElement("-fPIC");
@@ -130,9 +130,9 @@ public final class GccCCompiler extends GccCompatibleCCompiler {
     }
     /**
      * Create parser to determine dependencies.
-     * 
+     *
      * Will create appropriate parser (C++, FORTRAN) based on file extension.
-     *  
+     *
      */
     protected Parser createParser(File source) {
         if (source != null) {
@@ -237,6 +237,16 @@ public final class GccCCompiler extends GccCompatibleCCompiler {
         return GccLinker.getInstance().getLinker(linkType);
     }
     public int getMaximumCommandLength() {
-        return Integer.MAX_VALUE;
+    	/*
+    	 * Window-specific compilers use a limit of 2048 to prevent over
+    	 * running the available command line length, while the Unix compilers
+    	 * assume that they have an unlimited command line.
+    	 */
+    	if(System.getProperty("os.name").indexOf("Windows") >= 0) {
+    		return 2048;
+    	}
+    	else {
+    		return Integer.MAX_VALUE;
+    	}
     }
 }
