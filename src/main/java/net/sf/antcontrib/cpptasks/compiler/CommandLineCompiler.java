@@ -140,7 +140,7 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
         //
         //   determine length of executable name and args
         //
-        String command = getCommand();
+        String command = config.getCommand();
         int baseLength = command.length() + args.length + endArgs.length;
         if (libtool) {
             baseLength += 8;
@@ -368,9 +368,10 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
         args.copyInto(argArray);
         boolean rebuild = specificDef.getRebuild(baseDefs, 0);
         File[] envIncludePath = getEnvironmentIncludePath();
+        String path = specificDef.getToolPath();
         return new CommandLineCompilerConfiguration(this, configId, incPath,
                 sysIncPath, envIncludePath, includePathIdentifier.toString(),
-                argArray, paramArray, rebuild, endArgs);
+                argArray, paramArray, rebuild, endArgs, path);
     }
     protected int getArgumentCountPerInputFile() {
         return 1;
@@ -456,4 +457,5 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
     protected final void setCommand(String command) {
         this.command = command;
     }
+    
 }

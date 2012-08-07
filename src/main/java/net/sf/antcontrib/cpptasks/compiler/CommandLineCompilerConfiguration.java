@@ -16,6 +16,7 @@
  */
 package net.sf.antcontrib.cpptasks.compiler;
 import java.io.File;
+import java.io.IOException;
 
 import net.sf.antcontrib.cpptasks.CCTask;
 import net.sf.antcontrib.cpptasks.CompilerParam;
@@ -47,10 +48,11 @@ public final class CommandLineCompilerConfiguration
     private/* final */ProcessorParam[] params;
     private/* final */boolean rebuild;
     private/* final */File[] sysIncludePath;
+	private/* final */String path;
     public CommandLineCompilerConfiguration(CommandLineCompiler compiler,
             String identifier, File[] includePath, File[] sysIncludePath,
             File[] envIncludePath, String includePathIdentifier, String[] args,
-            ProcessorParam[] params, boolean rebuild, String[] endArgs) {
+            ProcessorParam[] params, boolean rebuild, String[] endArgs,String path) {
         if (compiler == null) {
             throw new NullPointerException("compiler");
         }
@@ -88,6 +90,7 @@ public final class CommandLineCompilerConfiguration
         this.endArgs = (String[]) endArgs.clone();
         exceptFiles = null;
         isPrecompiledHeaderGeneration = false;
+        this.path=path;
     }
     public CommandLineCompilerConfiguration(
             CommandLineCompilerConfiguration base, String[] additionalArgs,
@@ -220,7 +223,23 @@ public final class CommandLineCompilerConfiguration
     public Compiler getCompiler() {
     	return compiler;
     }
+
     public String getCommand() {
-    	return compiler.getCommand();
+    	if( this.path != null ) {
+    		File command = new File( this.path, compiler.getCommand() );
+    		try {
+				return command.getCanonicalPath();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return command.getAbsolutePath();
+				//return this.command;
+			}
+    	}
+    	else
+    		return compiler.getCommand();
+    }
+
+    public final void setCommandPath(String path) {
+    	this.path = path;
     }
 }

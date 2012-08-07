@@ -31,6 +31,7 @@ import net.sf.antcontrib.cpptasks.types.SystemLibrarySet;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FlexInteger;
 /**
  * A linker definition. linker elements may be placed either as children of a
@@ -49,6 +50,8 @@ public class LinkerDef extends ProcessorDef {
     private Boolean map;
     private int stack;
     private final Vector sysLibrarySets = new Vector();
+	private String toolPath;
+
     /**
      * Default constructor
      * 
@@ -505,4 +508,11 @@ public class LinkerDef extends ProcessorDef {
             }
         }
     }
+    
+	public String getToolPath() {
+		return toolPath;
+	}
+	public void setToolPath(String path) {
+		toolPath = path;
+	}
 }

@@ -15,6 +15,9 @@
  *  limitations under the License.
  */
 package net.sf.antcontrib.cpptasks.compiler;
+import java.io.File;
+import java.io.IOException;
+
 import net.sf.antcontrib.cpptasks.CCTask;
 import net.sf.antcontrib.cpptasks.LinkerParam;
 import net.sf.antcontrib.cpptasks.ProcessorParam;
@@ -37,12 +40,14 @@ public final class CommandLineLinkerConfiguration
     private/* final */boolean map;
     private/* final */ProcessorParam[] params;
     private/* final */boolean rebuild;
+    private/* final */String path;
     private boolean debug;
     private String startupObject;
+
     public CommandLineLinkerConfiguration(CommandLineLinker linker,
             String identifier, String[][] args, ProcessorParam[] params,
             boolean rebuild, boolean map, boolean debug, String[] libraryNames,
-            String startupObject) {
+            String startupObject, String path) {
         if (linker == null) {
             throw new NullPointerException("linker");
         }
@@ -63,6 +68,7 @@ public final class CommandLineLinkerConfiguration
             this.libraryNames = (String[]) libraryNames.clone();
         }
         this.startupObject = startupObject;
+        this.path=path;
     }
     public int bid(String filename) {
         return linker.bid(filename);
@@ -124,5 +130,24 @@ public final class CommandLineLinkerConfiguration
     }
     public boolean isDebug() {
     	return debug;
+    }
+    
+    public String getCommand() {
+    	if( this.path != null ) {
+    		File command = new File( this.path, linker.getCommand() );
+    		try {
+				return command.getCanonicalPath();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return command.getAbsolutePath();
+				//return this.command;
+			}
+    	}
+    	else
+    		return linker.getCommand();
+    }
+
+    public final void setCommandPath(String path) {
+    	this.path = path;
     }
 }
