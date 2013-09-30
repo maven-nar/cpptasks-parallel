@@ -1,13 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>net.sf.antcontrib</groupId>
-    <artifactId>cpptasks-parallel-local</artifactId>
-    <version>1</version>
-	<relativePath>parent/pom.xml</relativePath>
-  </parent>
-
   <groupId>net.sf.antcontrib</groupId>
   <artifactId>cpptasks-parallel</artifactId>
   <version>1.0-beta-5-parallel-1-SNAPSHOT</version>
@@ -16,6 +9,7 @@
   <description>
     Library to call native compilers and linkers.
   </description>
+  <url>http://github.com/richardkerr/cpptasks-parallel</url>
 
   <inceptionYear>2001</inceptionYear>
   <licenses>
@@ -25,13 +19,39 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/richardkerr/cpptasks-parallel.git</connection>
+    <developerConnection>scm:git:git://github.com/richardkerr/cpptasks-parallel.git</developerConnection>
+    <url>http://github.com/richardkerr/cpptasks-parallel</url>
+  </scm>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+<distributionManagement>
+  <repository>
+    <id>imagej.releases</id>
+    <name>ImageJ Releases Repository</name>
+    <url>dav:http://maven.imagej.net/content/repositories/thirdparty</url>
+  </repository>
+  <snapshotRepository>
+    <id>imagej.snapshots</id>
+    <name>ImageJ Snapshots Repository</name>
+    <url>dav:http://maven.imagej.net/content/repositories/snapshots</url>
+  </snapshotRepository>
+</distributionManagement>
+
   <build>
     <defaultGoal>install</defaultGoal>
+    <extensions>
+      <extension>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-webdav-jackrabbit</artifactId>
+      <version>1.0</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
