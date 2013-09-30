@@ -1,15 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.sf.antcontrib</groupId>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <groupId>com.github.maven-nar</groupId>
   <artifactId>cpptasks-parallel</artifactId>
-  <version>1.0-beta-5-parallel-1-SNAPSHOT</version>
+  <version>1.1.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>CPPTasks (parallel)</name>
   <description>
     Library to call native compilers and linkers.
   </description>
-  <url>http://github.com/richardkerr/cpptasks-parallel</url>
+  <url>https://github.com/maven-nar/cpptasks-parallel</url>
 
   <inceptionYear>2001</inceptionYear>
   <licenses>
@@ -21,27 +28,44 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git://github.com/richardkerr/cpptasks-parallel.git</connection>
-    <developerConnection>scm:git:git://github.com/richardkerr/cpptasks-parallel.git</developerConnection>
-    <url>http://github.com/richardkerr/cpptasks-parallel</url>
+    <connection>scm:git:git://github.com/maven-nar/cpptasks-parallel</connection>
+    <developerConnection>scm:git:git@github.com:maven-nar/cpptasks-parallel</developerConnection>
+    <url>https://github.com/maven-nar/cpptasks-parallel</url>
+    <tag>HEAD</tag>
   </scm>
-  
+
+  <developers>
+    <developer>
+      <id>ctrueden</id>
+      <name>Curtis Rueden</name>
+      <email>ctrueden@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/curtis-rueden</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+    <developer>
+      <id>dscho</id>
+      <name>Johannes Schindelin</name>
+      <email>johannes.schindelin@gmx.de</email>
+      <url>http://loci.wisc.edu/people/johannes-schindelin</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-<distributionManagement>
-  <repository>
-    <id>imagej.releases</id>
-    <name>ImageJ Releases Repository</name>
-    <url>dav:http://maven.imagej.net/content/repositories/thirdparty</url>
-  </repository>
-  <snapshotRepository>
-    <id>imagej.snapshots</id>
-    <name>ImageJ Snapshots Repository</name>
-    <url>dav:http://maven.imagej.net/content/repositories/snapshots</url>
-  </snapshotRepository>
-</distributionManagement>
 
   <build>
     <defaultGoal>install</defaultGoal>
@@ -53,6 +77,11 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>2.3.2</version>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
@@ -69,7 +98,7 @@
           <archive>
             <manifestSections>
               <manifestSection>
-                <name>net.sf.antcontrib.cpptasks</name>
+                <name>com.github.maven_nar.cpptasks</name>
                 <manifestEntries>
                   <Implementation-Title>cpptasks: Compiler Tasks for Apache Ant.</Implementation-Title>
                   <Implementation-Version>${project.version}</Implementation-Version>
@@ -88,7 +117,7 @@
           <excludes>
               <exclude>**/TestInstalledDevStudioLinker.java</exclude>
               <exclude>**/TestMetaObjectCompiler.java</exclude>
-              <exclude>**/TestAbstract*.java</exclude> 
+              <exclude>**/TestAbstract*.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -119,4 +148,58 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
