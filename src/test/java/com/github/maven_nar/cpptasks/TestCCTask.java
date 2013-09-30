@@ -55,7 +55,7 @@ public final class TestCCTask
     CompilerConfiguration config1 = new CommandLineCompilerConfiguration(
         (GccCCompiler) GccCCompiler.getInstance(), "dummy",
         new File[0], new File[0], new File[0], "", new String[0],
-        new ProcessorParam[0], true, new String[0]);
+        new ProcessorParam[0], true, new String[0], null);
     TargetInfo target1 = new TargetInfo(config1, new File[] {new File(
         "src/foo.bar")}
                                         , null, new File("foo.obj"), true);
@@ -79,7 +79,7 @@ public final class TestCCTask
     CompilerConfiguration config1 = new CommandLineCompilerConfiguration(
         (GccCCompiler) GccCCompiler.getInstance(), "dummy",
         new File[0], new File[0], new File[0], "", new String[0],
-        new ProcessorParam[0], false, new String[0]);
+        new ProcessorParam[0], false, new String[0], null);
     //
     //    target doesn't need to be rebuilt
     //
