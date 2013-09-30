@@ -35,13 +35,13 @@ public class TestCommandLineCompilerConfiguration
         return new CommandLineCompilerConfiguration(compiler, "dummy",
                 new File[0], new File[0], new File[0], "",
                 new String[]{"/Id:/gcc"}, new ProcessorParam[0], false,
-                new String[0], null);
+                new String[0]);
     }
     public void testConstructorNullCompiler() {
         try {
             new CommandLineCompilerConfiguration(null, "dummy", new File[0],
                     new File[0], new File[0], "", new String[0],
-                    new ProcessorParam[0], false, new String[0], null);
+                    new ProcessorParam[0], false, new String[0]);
             fail("Should throw exception for null compiler");
         } catch (NullPointerException ex) {
         }

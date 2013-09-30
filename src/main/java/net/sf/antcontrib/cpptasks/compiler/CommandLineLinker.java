@@ -42,7 +42,7 @@ import org.apache.tools.ant.types.Environment;
  *
  * @author Adam Murdoch
  */
-public abstract class CommandLineLinker extends AbstractLinker 
+public abstract class CommandLineLinker extends AbstractLinker
 {
     private String command;
     private Environment env = null;
@@ -56,6 +56,7 @@ public abstract class CommandLineLinker extends AbstractLinker
     
     // FREEHEP
     private int maxPathLength = 250;
+
 
     /** Creates a comand line linker invocation */
     public CommandLineLinker(String command,
@@ -172,17 +173,14 @@ public abstract class CommandLineLinker extends AbstractLinker
       }
       args[2].copyInto(options[1]);
 
-      if( specificDef.getEnv() != null )
-      	this.env = specificDef.getEnv();
 
       boolean rebuild = specificDef.getRebuild(baseDefs,0);
       boolean map = specificDef.getMap(defaultProviders,1);
-      String toolPath = specificDef.getToolPath();  
-      
+
       //task.log("libnames:"+libnames.length, Project.MSG_VERBOSE);
       return new CommandLineLinkerConfiguration(this,configId,options,
               paramArray,
-              rebuild,map, debug,libnames, startupObject, toolPath);
+              rebuild,map, debug,libnames, startupObject);
     }
 
     /**
@@ -201,7 +199,6 @@ public abstract class CommandLineLinker extends AbstractLinker
     protected final String getCommand() {
       return command;
     }
-    
     protected abstract String getCommandFileSwitch(String commandFile);
 
 
@@ -287,7 +284,7 @@ public abstract class CommandLineLinker extends AbstractLinker
           //
           //   construct the exception
           //
-          throw new BuildException(config.getCommand() + " failed with return code " + retval, task.getLocation());
+          throw new BuildException(this.getCommand() + " failed with return code " + retval, task.getLocation());
         }
         
     }
@@ -323,7 +320,7 @@ public abstract class CommandLineLinker extends AbstractLinker
         if (isLibtool) {
           allArgs[index++] = "libtool";
         }
-        allArgs[index++] = config.getCommand();
+        allArgs[index++] = this.getCommand();
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < preargs.length; i++) {
           allArgs[index++] = decorateLinkerOption(buf, preargs[i]);

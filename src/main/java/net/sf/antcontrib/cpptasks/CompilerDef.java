@@ -51,8 +51,6 @@ public final class CompilerDef extends ProcessorDef {
     private OptimizationEnum optimization;
     private int warnings = -1;
 	private List order;
-	private String toolPath;
-
     public CompilerDef() {
     }
     /**
@@ -515,12 +513,5 @@ public final class CompilerDef extends ProcessorDef {
 	
 	public List getOrder() {
 		return order;
-	}
-	
-	public String getToolPath() {
-		return toolPath;
-	}
-	public void setToolPath(String path) {
-		toolPath = path;
 	}
 }
