@@ -49,6 +49,8 @@ public class LinkerDef extends ProcessorDef {
     private Boolean map;
     private int stack;
     private final Vector sysLibrarySets = new Vector();
+	private String toolPath;
+
     /**
      * Default constructor
      * 
@@ -505,4 +507,12 @@ public class LinkerDef extends ProcessorDef {
             }
         }
     }
+    
+	public String getToolPath() {
+		return toolPath;
+	}
+	
+	public void setToolPath(String path) {
+		toolPath = path;
+	}
 }
