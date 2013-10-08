@@ -141,7 +141,7 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
         //
         //   determine length of executable name and args
         //
-        String command = config.getCommand();
+        String command = getPathedCommand(config);
         int baseLength = command.length() + args.length + endArgs.length;
         if (libtool) {
             baseLength += 8;
@@ -216,7 +216,7 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
                 //
                 //   construct the exception
                 //
-                exc = new BuildException(this.getCommand()
+                exc = new BuildException(getPathedCommand(config)
                         + " failed with return code " + retval, task
                         .getLocation());
 
@@ -379,6 +379,19 @@ public abstract class CommandLineCompiler extends AbstractCompiler {
     }
     protected final String getCommand() {
         return command;
+    }
+    public String getPathedCommand(CommandLineCompilerConfiguration config) {
+    	if( config.getCommandPath() != null ) {
+    		File command = new File( config.getCommandPath(), this.getCommand() );
+    		try {
+				return command.getCanonicalPath();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return command.getAbsolutePath();
+			}
+    	}
+    	else
+    		return this.getCommand();
     }
     abstract protected void getDefineSwitch(StringBuffer buffer, String define,
             String value);

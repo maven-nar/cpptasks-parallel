@@ -16,9 +16,6 @@
  */
 package com.github.maven_nar.cpptasks.compiler;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.tools.ant.BuildException;
 
 import com.github.maven_nar.cpptasks.CCTask;
@@ -41,13 +38,22 @@ public final class CommandLineLinkerConfiguration
     private/* final */boolean map;
     private/* final */ProcessorParam[] params;
     private/* final */boolean rebuild;
-    private/* final */String path;
+    private/* final */String commandPath;
     private boolean debug;
     private String startupObject;
+
     public CommandLineLinkerConfiguration(CommandLineLinker linker,
             String identifier, String[][] args, ProcessorParam[] params,
             boolean rebuild, boolean map, boolean debug, String[] libraryNames,
-            String startupObject, String path) {
+            String startupObject) {
+        this(linker, identifier, args, params, rebuild, map, debug, 
+        		libraryNames, startupObject, null);
+    }
+
+    public CommandLineLinkerConfiguration(CommandLineLinker linker,
+            String identifier, String[][] args, ProcessorParam[] params,
+            boolean rebuild, boolean map, boolean debug, String[] libraryNames,
+            String startupObject, String commandPath) {
         if (linker == null) {
             throw new NullPointerException("linker");
         }
@@ -68,7 +74,7 @@ public final class CommandLineLinkerConfiguration
             this.libraryNames = (String[]) libraryNames.clone();
         }
         this.startupObject = startupObject;
-        this.path = path;
+        this.commandPath = commandPath;
     }
     public int bid(String filename) {
         return linker.bid(filename);
@@ -131,21 +137,11 @@ public final class CommandLineLinkerConfiguration
     public boolean isDebug() {
     	return debug;
     }
-    public String getCommand() {
-    	if( this.path != null ) {
-    		File command = new File( this.path, linker.getCommand() );
-    		try {
-				return command.getCanonicalPath();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return command.getAbsolutePath();
-				//return this.command;
-			}
-    	}
-    	else
-    		return linker.getCommand();
+
+    public final void setCommandPath(String commandPath) {
+    	this.commandPath = commandPath;
     }
-    public final void setCommandPath(String path) {
-    	this.path = path;
+    public final String getCommandPath() {
+    	return this.commandPath;
     }
 }

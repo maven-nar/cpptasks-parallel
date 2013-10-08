@@ -205,7 +205,19 @@ public abstract class CommandLineLinker extends AbstractLinker
       return command;
     }
     protected abstract String getCommandFileSwitch(String commandFile);
-
+    public String getPathedCommand(CommandLineLinkerConfiguration config) {
+    	if( config.getCommandPath() != null ) {
+    		File command = new File( config.getCommandPath(), this.getCommand() );
+    		try {
+				return command.getCanonicalPath();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return command.getAbsolutePath();
+			}
+    	}
+    	else
+    		return this.getCommand();
+    }
 
      public String getIdentifier() {
       if(identifier == null) {
@@ -289,7 +301,7 @@ public abstract class CommandLineLinker extends AbstractLinker
           //
           //   construct the exception
           //
-          throw new BuildException(config.getCommand() + " failed with return code " + retval, task.getLocation());
+          throw new BuildException(getPathedCommand(config) + " failed with return code " + retval, task.getLocation());
         }
         
     }
@@ -325,7 +337,7 @@ public abstract class CommandLineLinker extends AbstractLinker
         if (isLibtool) {
           allArgs[index++] = "libtool";
         }
-        allArgs[index++] = config.getCommand();
+        allArgs[index++] = getPathedCommand(config);
         StringBuffer buf = new StringBuffer();
 
 
