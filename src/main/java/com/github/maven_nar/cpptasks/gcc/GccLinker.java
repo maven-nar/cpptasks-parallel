@@ -45,6 +45,8 @@ public class GccLinker extends AbstractLdLinker {
                     discardFiles, "lib", ".so", true, null));
     private static final GccLinker instance = new GccLinker("gcc", objFiles,
             discardFiles, "", "", false, null);
+    private static final GccLinker clangInstance = new GccLinker("clang", objFiles,
+            discardFiles, "", "", false, null);
     private static final GccLinker machBundleLinker = new GccLinker("gcc",
             objFiles, discardFiles, "lib", ".bundle", false, null);
     private static final GccLinker machDllLinker = new GccLinker("gcc",
@@ -56,6 +58,9 @@ public class GccLinker extends AbstractLdLinker {
             objFiles, discardFiles, "", ".dll", false, null);    
     public static GccLinker getInstance() {
         return instance;
+    }
+    public static GccLinker getCLangInstance() {
+        return clangInstance;
     }
     private File[] libDirs;
     protected GccLinker(String command, String[] extensions,
